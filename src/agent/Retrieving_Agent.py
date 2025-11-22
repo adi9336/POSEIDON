@@ -17,6 +17,7 @@ from src.state.models import FloatChatState, ScientificIntent
 from src.tools.intent_extractor import extract_intent_with_llm
 from src.tools.geosolver import resolve_location_fast
 from src.tools.fetcher import fetch_argo_data
+from src.tools.processor import process_data as processor_process_data
 
 
 # ---------------------------------------------------------
@@ -72,19 +73,20 @@ def fetch_data(state: FloatChatState) -> FloatChatState:
         )
     
     try:
-        # Fetch the data using the fetcher
-        df = fetch_argo_data(state.intent)
+        # Fetch the data using the fetcher, passing the state to store the file path
+        df = fetch_argo_data(state.intent, state=state)
         
         if df is not None and not df.empty:
             success_msg = f"✓ Data fetched successfully: {len(df)} rows, {len(df.columns)} columns"
             print(success_msg)
             
+            # The fetcher has already updated state.raw_data with the file path
             return FloatChatState(
                 user_query=state.user_query,
                 intent=state.intent,
                 dataset="ArgoFloats",
                 erddap_url=state.erddap_url,
-                raw_data=df,
+                raw_data=state.raw_data,  # This now contains the file path
                 processed=state.processed,
                 final_answer=success_msg
             )
@@ -115,6 +117,9 @@ def fetch_data(state: FloatChatState) -> FloatChatState:
         )
 
 
+# Process data function is now imported from src.tools.processor as processor_process_data
+
+
 # ---------------------------------------------------------
 # 2. Build the graph
 # ---------------------------------------------------------
@@ -128,10 +133,12 @@ def create_argo_workflow():
     # Add nodes
     workflow.add_node("extract_intent", extract_intent)
     workflow.add_node("fetch_data", fetch_data)
+    workflow.add_node("process_data", processor_process_data)
     
     # Define the edges
     workflow.add_edge("extract_intent", "fetch_data")
-    workflow.add_edge("fetch_data", END)
+    workflow.add_edge("fetch_data", "process_data")
+    workflow.add_edge("process_data", END)
     
     # Set entry point
     workflow.set_entry_point("extract_intent")
@@ -159,7 +166,7 @@ def run_argo_workflow(query: str) -> dict:
         intent=None,
         dataset=None,
         erddap_url=None,
-        raw_data=None,
+        raw_data="",  # Initialize with empty string
         processed=None,
         final_answer=None
     )
@@ -188,8 +195,7 @@ def run_argo_workflow(query: str) -> dict:
 if __name__ == "__main__":
     # Example queries
     test_queries = [
-        
-        "What's the salinity at 500m depth near Mumbai in January 2024?",
+        "what is the temperature at 500m depth near Mumbai in January 2024?",
         
     ]
     
