@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: poseidon
+Version: 0.1.0
+Summary: Scientific data analysis and visualization tool
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: langchain-openai>=0.1.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: requests>=2.31.0
