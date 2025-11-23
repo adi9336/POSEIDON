@@ -4,9 +4,12 @@ Fetches oceanographic data from Argo floats using direct ERDDAP CSV API.
 """
 import datetime
 import os
+from typing import Optional
 import pandas as pd
 import requests
 from dotenv import load_dotenv
+from io import StringIO
+from src.state.models import FloatChatState
 
 # Try to import geosolver, provide fallback if not available
 try:
@@ -39,7 +42,7 @@ except ImportError:
 load_dotenv()
 
 
-def fetch_argo_data(intent, retry_with_broader_search=True) -> pd.DataFrame:
+def fetch_argo_data(intent, retry_with_broader_search=True, state: Optional[FloatChatState] = None) -> pd.DataFrame:
     """
     Fetch Argo float data for a specific region and time range.
     
@@ -47,27 +50,28 @@ def fetch_argo_data(intent, retry_with_broader_search=True) -> pd.DataFrame:
         intent: An object with attributes: lat, lon, depth, depth_range, 
                 time_range, variable, operation, location, context_needed
         retry_with_broader_search: If True, retry with expanded parameters if no data found
+        state: Optional FloatChatState to store the output path in raw_data
         
     Returns:
         pd.DataFrame: DataFrame containing the Argo float data
     """
     
     # Try with original parameters first
-    df = _fetch_with_params(intent, radius_degrees=3, days_back=30)
+    df = _fetch_with_params(intent, radius_degrees=3, days_back=30, state=state)
     
     # If no data and retry enabled, try broader search
     if df.empty and retry_with_broader_search:
         print(f"   ℹ️  No data found. Trying broader search (5° radius)...")
-        df = _fetch_with_params(intent, radius_degrees=5, days_back=60)
+        df = _fetch_with_params(intent, radius_degrees=5, days_back=60, state=state)
         
         if df.empty:
             print(f"   ℹ️  Still no data. Trying larger area (10° radius, 180 days)...")
-            df = _fetch_with_params(intent, radius_degrees=10, days_back=180)
+            df = _fetch_with_params(intent, radius_degrees=10, days_back=180, state=state)
     
     return df
 
 
-def _fetch_with_params(intent, radius_degrees=3, days_back=30) -> pd.DataFrame:
+def _fetch_with_params(intent, radius_degrees=3, days_back=30, state: Optional[FloatChatState] = None) -> pd.DataFrame:
     """
     Internal function to fetch data with specific parameters using ERDDAP CSV API.
     """
@@ -188,8 +192,15 @@ def _fetch_with_params(intent, radius_degrees=3, days_back=30) -> pd.DataFrame:
             output_file = f"argo_data_{timestamp}.csv"
             output_path = os.path.join(output_dir, output_file)
             
+            # Save the DataFrame to CSV
             df.to_csv(output_path, index=False)
             print(f"   💾 Saved to: {output_path}")
+            
+            # Update state with the output path if state is provided
+            if state is not None and isinstance(state, FloatChatState):
+                # Ensure we're only storing the string path, not the DataFrame
+                state.raw_data = str(output_path)  # Convert to string explicitly
+                print(f"   📝 Updated state.raw_data with: {output_path}")
             
             return df
             

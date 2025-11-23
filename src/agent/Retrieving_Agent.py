@@ -195,6 +195,8 @@ def run_argo_workflow(query: str) -> dict:
 if __name__ == "__main__":
     # Example queries
     test_queries = [
+        
+        "What's the salinity at 500m depth near Mumbai in January 2024?",
         "what is the temperature at 500m depth near Mumbai in January 2024?",
         
     ]

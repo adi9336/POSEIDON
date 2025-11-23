@@ -15,8 +15,12 @@ from langchain_core.messages import HumanMessage
 # Local imports
 from src.state.models import FloatChatState, ScientificIntent
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging with colored output
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 
 # Constants
@@ -30,31 +34,47 @@ class ArgoDataProcessor:
     
     def __init__(self, state: Optional[FloatChatState] = None):
         """Initialize with optional state."""
+        logger.info("🔧 Initializing ArgoDataProcessor...")
         self.state = state
         self.llm = None
         self.sql_tool = None
         self._init_components()
+        logger.info("✅ ArgoDataProcessor initialized successfully")
         
     def _init_components(self):
         """Initialize database and LLM components."""
+        logger.info("🔄 Initializing components (database and LLM)...")
         self._init_db()
         self._init_llm()
+        logger.info("✅ All components initialized successfully")
     
     def _init_db(self):
         """Initialize SQLite database and import data if needed."""
         try:
+            logger.info(f"🗄️  Connecting to database: {DB_PATH}")
             with sqlite3.connect(DB_PATH) as conn:
+                logger.info("✅ Database connection established")
+                
                 self._create_tables(conn)
+                logger.info("✅ Database tables verified/created")
+                
                 if self._should_import_data(conn):
+                    logger.info("📥 Importing initial data...")
                     self._import_initial_data(conn)
+                else:
+                    logger.info("✅ Database already contains data, skipping import")
+                    
         except Exception as e:
-            logger.error(f"Database initialization error: {e}")
+            logger.error(f"❌ Database initialization error: {e}")
             raise
 
     def _create_tables(self, conn: sqlite3.Connection):
         """Create necessary database tables if they don't exist."""
+        logger.info("🔨 Creating/verifying database schema...")
+        
         # First, drop the table if it exists to ensure clean schema
         conn.execute("DROP TABLE IF EXISTS argo_data")
+        logger.info("✅ Old table dropped (if existed)")
         
         # Create the table with the correct schema
         conn.execute("""
@@ -68,62 +88,81 @@ class ArgoDataProcessor:
                 psal REAL,
                 pres REAL,
                 nitrate REAL,
-                -- Add indexes for better query performance
                 CONSTRAINT idx_lat_lon_time UNIQUE (latitude, longitude, time, pres)
             )
         """)
+        logger.info("✅ argo_data table created successfully")
         
         # Create additional indexes
         conn.execute("CREATE INDEX IF NOT EXISTS idx_pres ON argo_data(pres)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_time ON argo_data(time)")
+        logger.info("✅ Database indexes created successfully")
 
     def _should_import_data(self, conn: sqlite3.Connection) -> bool:
         """Check if we need to import data into the database."""
         count = conn.execute("SELECT COUNT(*) FROM argo_data;").fetchone()[0]
-        return count == 0 and self.state and hasattr(self.state, 'raw_data') and self.state.raw_data
+        logger.info(f"📊 Current database row count: {count}")
+        should_import = count == 0 and self.state and hasattr(self.state, 'raw_data') and self.state.raw_data
+        return should_import
 
     def _import_initial_data(self, conn: sqlite3.Connection):
         """Import initial data from CSV if available."""
         try:
+            logger.info(f"📂 Reading CSV file: {self.state.raw_data}")
             df = pd.read_csv(self.state.raw_data)
+            logger.info(f"✅ CSV loaded: {len(df)} rows, {len(df.columns)} columns")
+            
+            logger.info("💾 Importing data to database...")
             df.to_sql("argo_data", conn, if_exists="append", index=False)
-            logger.info(f"Imported {len(df)} rows from {self.state.raw_data}")
+            logger.info(f"✅ Successfully imported {len(df)} rows from {self.state.raw_data}")
+            
         except Exception as e:
-            logger.error(f"Error importing data: {e}")
+            logger.error(f"❌ Error importing data: {e}")
             raise
 
     def _init_llm(self):
         """Initialize the language model and SQL tools."""
         try:
+            logger.info("🤖 Initializing OpenAI LLM...")
             self.llm = ChatOpenAI(
                 model="gpt-3.5-turbo",
                 temperature=0,
                 api_key=os.getenv("OPENAI_API_KEY")
             )
+            logger.info("✅ OpenAI LLM initialized successfully")
+            
+            logger.info("🔗 Setting up SQL database connection...")
             db = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}")
             self.sql_tool = QuerySQLDataBaseTool(db=db)
+            logger.info("✅ SQL tools initialized successfully")
+            
         except Exception as e:
-            logger.error(f"LLM initialization error: {e}")
+            logger.error(f"❌ LLM initialization error: {e}")
             raise
 
     def _get_table_columns(self) -> List[str]:
         """Get list of columns in the argo_data table."""
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
-            cursor.execute("PRAGMA table_info(argos_data);")
-            return [col[1] for col in cursor.fetchall()]
+            cursor.execute("PRAGMA table_info(argo_data);")
+            columns = [col[1] for col in cursor.fetchall()]
+            logger.info(f"✅ Retrieved {len(columns)} columns from database")
+            return columns
 
     def _get_sample_data(self, limit: int = 3) -> List[Dict]:
         """Get sample data from the database."""
         with sqlite3.connect(DB_PATH) as conn:
-            return pd.read_sql_query(
+            sample = pd.read_sql_query(
                 "SELECT * FROM argo_data LIMIT ?", 
                 conn, 
                 params=(limit,)
             ).to_dict('records')
+            logger.info(f"✅ Retrieved {len(sample)} sample records")
+            return sample
 
     def _build_sql_conditions(self, intent: ScientificIntent, depth_tolerance: float = None) -> Tuple[str, Dict[str, Any]]:
         """Build SQL WHERE conditions based on intent."""
+        logger.info("🔍 Building SQL query conditions...")
         conditions = []
         params = {}
         
@@ -139,6 +178,7 @@ class ArgoDataProcessor:
                 'lon_min': float(intent.lon) - DEFAULT_LAT_LON_RANGE,
                 'lon_max': float(intent.lon) + DEFAULT_LAT_LON_RANGE
             })
+            logger.info(f"✅ Location filter: Lat {intent.lat}±{DEFAULT_LAT_LON_RANGE}, Lon {intent.lon}±{DEFAULT_LAT_LON_RANGE}")
         
         # Handle depth with dynamic tolerance
         if intent.depth is not None:
@@ -149,6 +189,7 @@ class ArgoDataProcessor:
                 'depth_min': target_depth - tolerance,
                 'depth_max': target_depth + tolerance
             })
+            logger.info(f"✅ Depth filter: {target_depth}±{tolerance}m")
         
         # Handle time range
         if intent.time_range:
@@ -158,25 +199,35 @@ class ArgoDataProcessor:
                 'start_date': start_date,
                 'end_date': end_date
             })
+            logger.info(f"✅ Time range filter: {start_date} to {end_date}")
         
-        return " AND ".join(conditions) if conditions else "1=1", params
+        where_clause = " AND ".join(conditions) if conditions else "1=1"
+        logger.info(f"✅ SQL conditions built successfully ({len(conditions)} conditions)")
+        return where_clause, params
 
     def execute_sql_query(self, query: str, params: Optional[Dict] = None) -> pd.DataFrame:
         """Execute a parameterized SQL query and return results as DataFrame."""
         try:
+            logger.info("🔎 Executing SQL query...")
             with sqlite3.connect(DB_PATH) as conn:
-                return pd.read_sql_query(query, conn, params=params)
+                df = pd.read_sql_query(query, conn, params=params)
+                logger.info(f"✅ Query executed successfully: {len(df)} rows returned")
+                return df
         except Exception as e:
-            logger.error(f"SQL query error: {e}")
+            logger.error(f"❌ SQL query error: {e}")
             raise
 
     def generate_nlp_summary(self, df: pd.DataFrame, query: str) -> str:
         """Generate a natural language summary of the query results using OpenAI."""
+        logger.info("📝 Generating natural language summary...")
+        
         if df.empty:
+            logger.warning("⚠️  No data found matching query criteria")
             return "No data found matching the query criteria."
         
         try:
             # Prepare data statistics
+            logger.info("📊 Calculating data statistics...")
             stats = {}
             for col in ['temp', 'psal', 'pres']:
                 if col in df.columns:
@@ -187,30 +238,24 @@ class ArgoDataProcessor:
                         'mean': round(col_stats.get('mean', 0), 2),
                         'count': int(col_stats.get('count', 0))
                     }
+            logger.info(f"✅ Statistics calculated for {len(stats)} parameters")
             
             # Get unique locations and platform counts
             location_info = ""
             if 'latitude' in df.columns and 'longitude' in df.columns:
                 unique_locations = df[['latitude', 'longitude']].drop_duplicates()
                 location_info = f"Data collected from {len(unique_locations)} unique locations. "
+                logger.info(f"✅ Found {len(unique_locations)} unique locations")
             
             # Get platform info
             platform_info = ""
             if 'platform_number' in df.columns:
                 unique_platforms = df['platform_number'].nunique()
                 platform_info = f"Data comes from {unique_platforms} different Argo floats. "
-            
-            # Prepare context for OpenAI
-            context = {
-                'query': query,
-                'stats': stats,
-                'row_count': len(df),
-                'location_info': location_info,
-                'platform_info': platform_info,
-                'columns': list(df.columns)
-            }
+                logger.info(f"✅ Data from {unique_platforms} Argo floats")
             
             # Generate prompt for OpenAI
+            logger.info("🤖 Calling OpenAI API for summary generation...")
             prompt = f"""
             You are an oceanographic data assistant. Analyze the following data and provide a concise, 
             insightful summary in natural language. Focus on key patterns, anomalies, and notable observations.
@@ -218,33 +263,27 @@ class ArgoDataProcessor:
             Query: {query}
             
             Data Overview:
-            - Number of data points: {row_count}
+            - Number of data points: {len(df)}
             {location_info}{platform_info}
             
             Statistics:
-            {stats}
+            {chr(10).join([f"- {k}: {v}" for k, v in stats.items()])}
             
             Provide a 3-5 sentence summary that would be helpful for an oceanographer.
             Include any notable patterns, ranges, or anomalies in the data.
             If the data is limited, suggest what additional information might be needed.
-            """.format(
-                query=context['query'],
-                row_count=context['row_count'],
-                location_info=context['location_info'],
-                platform_info=context['platform_info'],
-                stats='\n'.join([f"- {k}: {v}" for k, v in context['stats'].items()])
-            )
+            """
             
             # Call OpenAI API
-            response = self.llm.invoke([
-                {"role": "system", "content": "You are a helpful oceanographic data analyst."},
-                {"role": "user", "content": prompt}
-            ])
+            response = self.llm.invoke([HumanMessage(content=prompt)])
+            logger.info("✅ OpenAI summary generated successfully")
             
-            return response.choices[0].message.content.strip()
+            return response.content.strip()
             
         except Exception as e:
-            logger.error(f"Error generating NLP summary with OpenAI: {e}")
+            logger.error(f"❌ Error generating NLP summary with OpenAI: {e}")
+            logger.info("🔄 Falling back to basic summary...")
+            
             # Fallback to basic summary if OpenAI fails
             try:
                 basic_summary = (
@@ -253,28 +292,35 @@ class ArgoDataProcessor:
                     f"Salinity: {df['psal'].min():.1f} to {df['psal'].max():.1f} PSU. "
                     f"Depth: {df['pres'].min():.1f} to {df['pres'].max():.1f} m."
                 )
+                logger.info("✅ Basic fallback summary generated")
                 return basic_summary
             except:
+                logger.error("❌ Summary generation completely failed")
                 return "Summary generation failed. Please check the data manually."
 
     def process_query(self, query: str) -> Dict[str, Any]:
         """Process a natural language query and return structured results."""
         try:
-            logger.info(f"Processing query: {query}")
+            logger.info(f"🚀 Processing query: '{query}'")
             
             # Get intent from state or use default
             intent = getattr(self.state, 'intent', None)
             if not intent:
                 raise ValueError("No intent available for processing")
+            logger.info("✅ Intent retrieved from state")
             
             # Log database info for debugging
             try:
-                logger.info(f"Available columns in database: {self._get_table_columns()}")
-                logger.info(f"Sample data: {self._get_sample_data()}")
+                columns = self._get_table_columns()
+                logger.info(f"📋 Available columns: {', '.join(columns)}")
+                
+                samples = self._get_sample_data()
+                logger.info(f"📊 Sample data retrieved ({len(samples)} records)")
             except Exception as e:
-                logger.warning(f"Could not fetch database info: {e}")
+                logger.warning(f"⚠️  Could not fetch database info: {e}")
             
             # First try with default depth tolerance
+            logger.info("🔍 Building initial query with default tolerance...")
             conditions, params = self._build_sql_conditions(intent, DEFAULT_DEPTH_TOLERANCE)
             
             # Build the SQL query
@@ -286,13 +332,17 @@ class ArgoDataProcessor:
                 LIMIT {DEFAULT_QUERY_LIMIT}
             """
             
-            logger.info(f"Executing SQL: {sql} with params: {params}")
+            logger.info(f"📝 SQL Query: {sql[:100]}...")
+            logger.info(f"📝 Parameters: {params}")
+            
             df = self.execute_sql_query(sql, params)
             
             # If no results, try with wider depth range
             if df.empty and intent.depth is not None:
-                logger.warning("No data found with initial depth range, trying wider range...")
-                conditions, params = self._build_sql_conditions(intent, DEFAULT_DEPTH_TOLERANCE * 5)  # 5x tolerance
+                logger.warning("⚠️  No data found with initial depth range")
+                logger.info("🔄 Retrying with 5x wider depth tolerance...")
+                
+                conditions, params = self._build_sql_conditions(intent, DEFAULT_DEPTH_TOLERANCE * 5)
                 sql = f"""
                     SELECT temp, psal, latitude, longitude, time, pres, platform_number
                     FROM argo_data
@@ -301,9 +351,14 @@ class ArgoDataProcessor:
                     LIMIT {DEFAULT_QUERY_LIMIT}
                 """
                 df = self.execute_sql_query(sql, params)
+                
+                if not df.empty:
+                    logger.info("✅ Data found with wider tolerance")
             
             # Generate summary with more context
             summary = self.generate_nlp_summary(df, query)
+            
+            logger.info(f"✅ Query processing completed successfully: {len(df)} results")
             
             return {
                 "status": "success",
@@ -315,7 +370,7 @@ class ArgoDataProcessor:
             
         except Exception as e:
             error_msg = f"Error processing query: {str(e)}"
-            logger.error(error_msg)
+            logger.error(f"❌ {error_msg}")
             return {
                 "status": "error",
                 "message": error_msg
@@ -325,22 +380,31 @@ def process_data(state: FloatChatState) -> FloatChatState:
     """
     LangGraph node that processes data based on the current state.
     """
-    logger.info("Starting data processing")
+    logger.info("=" * 60)
+    logger.info("🌊 STARTING DATA PROCESSING NODE")
+    logger.info("=" * 60)
     
     try:
         # Input validation
+        logger.info("🔍 Validating input state...")
         if not hasattr(state, 'user_query') or not state.user_query:
             raise ValueError("No query provided for processing")
+        logger.info(f"✅ Query validated: '{state.user_query}'")
             
         # Initialize and process
         processor = ArgoDataProcessor(state=state)
+        
+        logger.info("🎯 Executing query processing...")
         result = processor.process_query(state.user_query)
         
         # Handle results
         if result["status"] == "error":
             raise Exception(result.get("message", "Unknown error in data processing"))
+        
+        logger.info("✅ Query executed successfully")
             
         # Update state
+        logger.info("💾 Updating state with results...")
         state.processed = {
             "data": result["data"],
             "summary": result["summary"],
@@ -348,11 +412,18 @@ def process_data(state: FloatChatState) -> FloatChatState:
             "columns": result["columns"]
         }
         state.status = "processed"
-        logger.info(f"Successfully processed {result['row_count']} rows")
+        
+        logger.info("=" * 60)
+        logger.info(f"✅ DATA PROCESSING COMPLETED: {result['row_count']} rows processed")
+        logger.info(f"📊 Summary: {result['summary'][:100]}...")
+        logger.info("=" * 60)
         
     except Exception as e:
         error_msg = f"Error in process_data: {str(e)}"
-        logger.error(error_msg)
+        logger.error("=" * 60)
+        logger.error(f"❌ DATA PROCESSING FAILED")
+        logger.error(f"❌ {error_msg}")
+        logger.error("=" * 60)
         state.status = "error"
         state.error = error_msg
         

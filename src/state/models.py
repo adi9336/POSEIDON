@@ -42,9 +42,12 @@ class FloatChatState(BaseModel):
     intent: Optional[ScientificIntent] = None
     dataset: Optional[str] = None          # ArgoFloats or ArgoProfile
     erddap_url: Optional[str] = None
-    raw_data: Optional[Any] = None         # Pandas DataFrame
+    raw_data: str = ""           # Path to CSV file or raw data
     processed: Optional[Dict[str, Any]] = None
     final_answer: Optional[str] = None
+    status: Optional[str] = None  # Tracks processing status: None, "processing", "processed", "error"
+    error: Optional[str] = None   # Stores error message if status is "error"
+
     
     class Config:
         arbitrary_types_allowed = True  # Allow pandas DataFrame
