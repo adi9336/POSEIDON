@@ -413,9 +413,12 @@ def process_data(state: FloatChatState) -> FloatChatState:
         }
         state.status = "processed"
         
+        # Save the summary to final_answer
+        state.final_answer = result['summary']
+        
         logger.info("=" * 60)
         logger.info(f"✅ DATA PROCESSING COMPLETED: {result['row_count']} rows processed")
-        logger.info(f"📊 Summary: {result['summary'][:100]}...")
+        logger.info(f"📊 Summary: {state.final_answer}")
         logger.info("=" * 60)
         
     except Exception as e:
