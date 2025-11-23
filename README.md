@@ -6,6 +6,25 @@
 
 POSEIDON is an advanced oceanographic data analysis system that processes and analyzes Argo float data to provide meaningful insights about ocean conditions. The system uses natural language processing to understand user queries and generates SQL queries to retrieve relevant data from a database.
 
+$screenshotSection = @"
+
+## 📸 Screenshots
+
+<div align=""center"">
+  <img src=""screenshots/Screenshot 2025-11-23 120743.png"" alt=""POSEIDON Query Interface"" style=""max-width: 90%; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"">
+</div>
+
+"@
+
+# Read the current README content
+$readmeContent = Get-Content -Path .\README.md -Raw
+
+# Insert the screenshot section after the Features section
+$updatedReadme = $readmeContent -replace "(## 🌟 Features[^#]*)##", "`$1`n`n$screenshotSection`n##"
+
+# Save the updated content back to README.md
+$updatedReadme | Set-Content -Path .\README.md -Encoding UTF8`
+
 ## 🌟 Features
 
 - **Natural Language Processing**: Understands complex oceanographic queries
