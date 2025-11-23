@@ -10,12 +10,12 @@ POSEIDON is an advanced oceanographic data analysis system that processes and an
 
 <img width="1460" height="1022" alt="Screenshot 2025-11-23 120743" src="https://github.com/user-attachments/assets/f2a27ddf-2b9f-42df-93eb-299ec3e6f37f" />
 
+<img width="1178" height="885" alt="Screenshot 2025-11-23 120908" src="https://github.com/user-attachments/assets/aec2ff5d-b73d-4bcf-afe3-9ab33020878f" />
+
 
 # Read the current README content
 $readmeContent = Get-Content -Path .\README.md -Raw
 
-# Insert the screenshot section after the Features section
-$updatedReadme = $readmeContent -replace "(## 🌟 Features[^#]*)##", "`$1`n`n$screenshotSection`n##"
 
 # Save the updated content back to README.md
 $updatedReadme | Set-Content -Path .\README.md -Encoding UTF8`
