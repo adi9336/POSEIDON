@@ -15,7 +15,7 @@ from src.state.models import FloatChatState, ScientificIntent
 
 # Import tools after models
 from src.tools.intent_extractor import extract_intent_with_llm
-from src.tools.geosolver import resolve_location_fast
+# from src.tools.geosolver import resolve_location_fast
 from src.tools.fetcher import fetch_argo_data
 from src.tools.processor import process_data as processor_process_data
 
@@ -196,8 +196,7 @@ if __name__ == "__main__":
     # Example queries
     test_queries = [
         
-        "What's the salinity at 500m depth near Mumbai in January 2024?",
-        "what is the temperature at 500m depth near Mumbai in January 2024?",
+        "What's the salinity at 500m depth near black sea in last month?"
         
     ]
     
@@ -231,3 +230,4 @@ if __name__ == "__main__":
                 print(df.head(3).to_string(index=False))
         
         print("\n" + "="*70 + "\n")
+        

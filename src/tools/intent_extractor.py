@@ -158,23 +158,101 @@ def fallback_intent_extraction(query: str) -> ScientificIntent:
     elif "anom" in q:
         obj["operation"] = "anomaly"
 
+def parse_relative_time(time_str: str) -> tuple:
+    """Parse relative time expressions into start and end dates.
+    
+    Args:
+        time_str: String containing time expression (e.g., 'last 30 days', 'last month')
+        
+    Returns:
+        Tuple of (start_date, end_date) in 'YYYY-MM-DD' format
+    """
+    today = datetime.datetime.utcnow()
+    time_str = time_str.lower().strip()
+    
+    try:
+        # Handle 'last month' specifically
+        if time_str == 'last month':
+            # Get first day of current month
+            first_of_current = today.replace(day=1)
+            # Get last day of previous month
+            last_day_prev_month = first_of_current - datetime.timedelta(days=1)
+            # Get first day of previous month
+            first_day_prev_month = last_day_prev_month.replace(day=1)
+            
+            # Ensure we're using the current year
+            current_year = today.year
+            first_day_prev_month = first_day_prev_month.replace(year=current_year)
+            last_day_prev_month = last_day_prev_month.replace(year=current_year)
+            
+            start_date = first_day_prev_month.strftime("%Y-%m-%d")
+            end_date = last_day_prev_month.strftime("%Y-%m-%d")
+            print(f"   ⏰ Time range for 'last month' (current year): {start_date} to {end_date}")
+            return start_date, end_date
+            
+        # Handle other time expressions
+        if 'last' in time_str:
+            num = 1  # Default to 1 if no number is specified
+            
+            # Extract number if present (e.g., 'last 3 days' -> 3)
+            import re
+            match = re.search(r'last\s+(\d+)', time_str)
+            if match:
+                num = int(match.group(1))
+            
+            if 'day' in time_str or 'days' in time_str:
+                end_date = today
+                start_date = end_date - datetime.timedelta(days=num)
+            elif 'week' in time_str or 'weeks' in time_str:
+                end_date = today
+                start_date = end_date - datetime.timedelta(weeks=num)
+            elif 'month' in time_str or 'months' in time_str:
+                # For 'last X months' (not just 'last month' which is handled above)
+                end_date = today.replace(day=1) - datetime.timedelta(days=1)  # Last day of previous month
+                start_date = end_date.replace(day=1)  # First day of previous month
+                if num > 1:
+                    # If more than 1 month, adjust start date using month arithmetic
+                    from dateutil.relativedelta import relativedelta
+                    start_date = today.replace(day=1) - relativedelta(months=num-1)
+                    start_date = start_date.replace(day=1)
+            elif 'year' in time_str or 'years' in time_str:
+                end_date = today
+                start_date = end_date.replace(year=end_date.year - num, month=1, day=1)
+                end_date = end_date.replace(year=end_date.year, month=1, day=1) - datetime.timedelta(days=1)
+            else:
+                return None, None
+            
+            start_date_str = start_date.strftime("%Y-%m-%d")
+            end_date_str = end_date.strftime("%Y-%m-%d")
+            print(f"   ⏰ Time range for '{time_str}': {start_date_str} to {end_date_str}")
+            return start_date_str, end_date_str
+            
+    except Exception as e:
+        print(f"⚠️ Error parsing time string '{time_str}': {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return None, None
+    
+    return None, None
+
     # Time range detection
-    if "6 month" in q or "six month" in q:
-        end = datetime.datetime.utcnow()
-        start = end - datetime.timedelta(days=180)
-        obj["time_range"] = (
-            start.strftime("%Y-%m-%d"),
-            end.strftime("%Y-%m-%d")
-        )
-    elif "last month" in q:
-        end = datetime.datetime.utcnow()
-        start = end - datetime.timedelta(days=30)
-        obj["time_range"] = (
-            start.strftime("%Y-%m-%d"),
-            end.strftime("%Y-%m-%d")
-        )
-    else:
-        obj["time_range"] = None
+    time_range = None
+    
+    # Check for specific time range patterns
+    if 'last month' in q:
+        time_range = parse_relative_time('last month')
+    elif 'last week' in q:
+        time_range = parse_relative_time('last week')
+    elif 'last year' in q:
+        time_range = parse_relative_time('last year')
+    elif 'last' in q and ('day' in q or 'days' in q):
+        # Extract number of days if specified (e.g., 'last 30 days')
+        import re
+        match = re.search(r'last\s+(\d+)\s+day', q)
+        num_days = int(match.group(1)) if match else 1
+        time_range = parse_relative_time(f'last {num_days} days')
+    
+    obj["time_range"] = time_range if time_range[0] and time_range[1] else None
 
     # Set defaults for other fields
     obj.setdefault("location", None)

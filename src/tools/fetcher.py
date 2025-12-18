@@ -11,35 +11,18 @@ from dotenv import load_dotenv
 from io import StringIO
 from src.state.models import FloatChatState
 
-# Try to import geosolver, provide fallback if not available
-try:
-    from geosolver import resolve_location_fast
-    GEOSOLVER_AVAILABLE = True
-except ImportError:
-    print("⚠️  Warning: geosolver module not found. Location name resolution disabled.")
-    GEOSOLVER_AVAILABLE = False
-    
-    # Fallback: basic location cache
-    KNOWN_LOCATIONS = {
-        'mumbai': (19.0760, 72.8777),
-        'arabian sea': (15.0, 65.0),
-        'bay of bengal': (15.0, 88.0),
-        'chennai': (13.0827, 80.2707),
-        'goa': (15.2993, 74.1240),
-        'new york': (40.7128, -74.0060),
-    }
-    
-    def resolve_location_fast(location: str):
-        """Fallback location resolver"""
-        if not location:
-            return None
-        loc_lower = location.lower().strip()
-        coords = KNOWN_LOCATIONS.get(loc_lower)
-        if coords:
-            print(f"   🗺️  '{location}' → lat={coords[0]:.4f}, lon={coords[1]:.4f} (cached)")
-        return coords
+# Import geosolver for location resolution
+from .geosolver import resolve_location_fast
+GEOSOLVER_AVAILABLE = True
 
 load_dotenv()
+
+
+def get_default_time_range(days_back=30):
+    """Get default time range based on days back from current date."""
+    end_date = datetime.datetime.utcnow()
+    start_date = end_date - datetime.timedelta(days=days_back)
+    return start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")
 
 
 def fetch_argo_data(intent, retry_with_broader_search=True, state: Optional[FloatChatState] = None) -> pd.DataFrame:
@@ -53,8 +36,14 @@ def fetch_argo_data(intent, retry_with_broader_search=True, state: Optional[Floa
         state: Optional FloatChatState to store the output path in raw_data
         
     Returns:
-        pd.DataFrame: DataFrame containing the Argo float data
+        pd.DataFrame: DataFrame containing the Argo float data, or empty DataFrame if no time range is specified
     """
+    # Check if time range is provided
+    if not hasattr(intent, 'time_range') or not intent.time_range:
+        print("\n⚠️  No time range specified. Using default of last 30 days.")
+        print("   You can specify a time range like: 'last month', 'last 7 days', or 'from 2024-01-01 to 2024-01-31'\n")
+        # Set a default time range
+        intent.time_range = get_default_time_range()
     
     # Try with original parameters first
     df = _fetch_with_params(intent, radius_degrees=3, days_back=30, state=state)
@@ -111,17 +100,20 @@ def _fetch_with_params(intent, radius_degrees=3, days_back=30, state: Optional[F
         print(f"   📏 Search radius: ±{radius_degrees}°")
         print(f"   📐 Range: lat [{lat_min:.1f}, {lat_max:.1f}], lon [{lon_min:.1f}, {lon_max:.1f}]")
 
-        # Extract time range
-        if hasattr(intent, 'time_range') and intent.time_range is not None and \
-           intent.time_range[0] is not None and intent.time_range[1] is not None:
+        # Extract and validate time range
+        if not hasattr(intent, 'time_range') or not intent.time_range:
+            print("   ⚠️  No time range specified. Using default of last 30 days.")
+            start_date, end_date = get_default_time_range(days_back)
+        else:
             start, end = intent.time_range
             start_date = start if isinstance(start, str) else start.strftime("%Y-%m-%d")
             end_date = end if isinstance(end, str) else end.strftime("%Y-%m-%d")
-        else:
-            end_date_dt = datetime.datetime.utcnow()
-            start_date_dt = end_date_dt - datetime.timedelta(days=days_back)
-            start_date = start_date_dt.strftime("%Y-%m-%d")
-            end_date = end_date_dt.strftime("%Y-%m-%d")
+            
+            # Ensure end date is not in the future
+            today = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+            if end_date > today:
+                print(f"   ⚠️  End date {end_date} is in the future. Adjusting to today ({today}).")
+                end_date = today
         
         start_time = f"{start_date}T00:00:00Z"
         end_time = f"{end_date}T23:59:59Z"
