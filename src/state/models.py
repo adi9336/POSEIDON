@@ -2,12 +2,14 @@
 State models for the Argo Float Chat system.
 These models define the data structures used throughout the workflow.
 """
+
 from pydantic import BaseModel, field_validator
 from typing import Optional, Tuple, Dict, Any, List
 
+
 class ScientificIntent(BaseModel):
-    variable: Optional[str] = None        # temp, psal, nitrate, etc.
-    operation: Optional[str] = None       # trend, difference, anomaly, etc.
+    variable: Optional[str] = None  # temp, psal, nitrate, etc.
+    operation: Optional[str] = None  # trend, difference, anomaly, etc.
     location: Optional[str] = None
     lat: Optional[float] = None
     lon: Optional[float] = None
@@ -16,7 +18,7 @@ class ScientificIntent(BaseModel):
     time_range: Optional[Tuple[Optional[str], Optional[str]]] = None
     context_needed: Optional[str] = None  # marine life impact, climate reasoning
 
-    @field_validator('time_range', mode='before')
+    @field_validator("time_range", mode="before")
     @classmethod
     def validate_time_range(cls, v):
         """Ensure time_range is properly formatted"""
@@ -26,8 +28,8 @@ class ScientificIntent(BaseModel):
             # Convert list to tuple and handle None values
             return tuple(v) if len(v) == 2 else None
         return v
-    
-    @field_validator('depth_range', mode='before')
+
+    @field_validator("depth_range", mode="before")
     @classmethod
     def validate_depth_range(cls, v):
         """Ensure depth_range is properly formatted"""
@@ -37,17 +39,19 @@ class ScientificIntent(BaseModel):
             return tuple(v) if len(v) == 2 else None
         return v
 
+
 class FloatChatState(BaseModel):
     user_query: str
     intent: Optional[ScientificIntent] = None
-    dataset: Optional[str] = None          # ArgoFloats or ArgoProfile
+    dataset: Optional[str] = None  # ArgoFloats or ArgoProfile
     erddap_url: Optional[str] = None
-    raw_data: str = ""           # Path to CSV file or raw data
+    raw_data: str = ""  # Path to CSV file or raw data
     processed: Optional[Dict[str, Any]] = None
     final_answer: Optional[str] = None
-    status: Optional[str] = None  # Tracks processing status: None, "processing", "processed", "error"
-    error: Optional[str] = None   # Stores error message if status is "error"
+    status: Optional[str] = (
+        None  # Tracks processing status: None, "processing", "processed", "error"
+    )
+    error: Optional[str] = None  # Stores error message if status is "error"
 
-    
     class Config:
         arbitrary_types_allowed = True  # Allow pandas DataFrame
