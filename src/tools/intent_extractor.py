@@ -3,6 +3,7 @@ import json
 import datetime
 import re
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from langchain_openai import ChatOpenAI
@@ -10,7 +11,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from src.state.models import ScientificIntent
-
 
 # ---------------------------------------------------------
 # 1. Initialize LLM
@@ -34,71 +34,76 @@ if OPENAI_API_KEY:
 # ---------------------------------------------------------
 def parse_relative_time(time_str: str) -> tuple:
     """Parse relative time expressions into start and end dates.
-    
+
     Args:
         time_str: String containing time expression (e.g., 'last 30 days', 'last month')
-        
+
     Returns:
         Tuple of (start_date, end_date) in 'YYYY-MM-DD' format
     """
     today = datetime.datetime.utcnow()
     time_str = time_str.lower().strip()
-    
+
     try:
         # Handle 'last month' specifically
-        if time_str == 'last month':
+        if time_str == "last month":
             # Get first day of current month
             first_of_current = today.replace(day=1)
             # Get last day of previous month
             last_day_prev_month = first_of_current - datetime.timedelta(days=1)
             # Get first day of previous month
             first_day_prev_month = last_day_prev_month.replace(day=1)
-            
+
             start_date = first_day_prev_month.strftime("%Y-%m-%d")
             end_date = last_day_prev_month.strftime("%Y-%m-%d")
             print(f"   ⏰ Time range for 'last month': {start_date} to {end_date}")
             return start_date, end_date
-            
+
         # Handle other time expressions
-        if 'last' in time_str:
+        if "last" in time_str:
             num = 1  # Default to 1 if no number is specified
-            
+
             # Extract number if present (e.g., 'last 3 days' -> 3)
-            match = re.search(r'last\s+(\d+)', time_str)
+            match = re.search(r"last\s+(\d+)", time_str)
             if match:
                 num = int(match.group(1))
-            
-            if 'day' in time_str:
+
+            if "day" in time_str:
                 end_date = today
                 start_date = end_date - datetime.timedelta(days=num)
-            elif 'week' in time_str:
+            elif "week" in time_str:
                 end_date = today
                 start_date = end_date - datetime.timedelta(weeks=num)
-            elif 'month' in time_str:
+            elif "month" in time_str:
                 # For 'last X months' (not just 'last month' which is handled above)
                 end_date = today.replace(day=1) - datetime.timedelta(days=1)
                 start_date = end_date.replace(day=1)
                 if num > 1:
                     # Approximate month calculation
-                    start_date = start_date.replace(month=max(1, start_date.month - num + 1))
-            elif 'year' in time_str:
+                    start_date = start_date.replace(
+                        month=max(1, start_date.month - num + 1)
+                    )
+            elif "year" in time_str:
                 end_date = today
                 start_date = end_date.replace(year=end_date.year - num, month=1, day=1)
                 end_date = end_date.replace(month=12, day=31)
             else:
                 return None, None
-            
+
             start_date_str = start_date.strftime("%Y-%m-%d")
             end_date_str = end_date.strftime("%Y-%m-%d")
-            print(f"   ⏰ Time range for '{time_str}': {start_date_str} to {end_date_str}")
+            print(
+                f"   ⏰ Time range for '{time_str}': {start_date_str} to {end_date_str}"
+            )
             return start_date_str, end_date_str
-            
+
     except Exception as e:
         print(f"⚠️ Error parsing time string '{time_str}': {str(e)}")
         import traceback
+
         traceback.print_exc()
         return None, None
-    
+
     return None, None
 
 
@@ -178,34 +183,34 @@ Response (assuming today is 2024-12-19):
 
         # Call the LLM
         response = llm.invoke(prompt)
-        content = response.content if hasattr(response, 'content') else str(response)
-        
+        content = response.content if hasattr(response, "content") else str(response)
+
         try:
             # Extract JSON from the response
             json_str = content.strip()
-            if '```json' in json_str:
-                json_str = json_str.split('```json')[1].split('```')[0].strip()
-            elif '```' in json_str:
-                json_str = json_str.split('```')[1].strip()
-                
+            if "```json" in json_str:
+                json_str = json_str.split("```json")[1].split("```")[0].strip()
+            elif "```" in json_str:
+                json_str = json_str.split("```")[1].strip()
+
             obj = json.loads(json_str)
-            
+
             # Convert arrays to tuples for Pydantic
-            if 'time_range' in obj:
-                if obj['time_range'] is None or obj['time_range'] == [None, None]:
-                    obj['time_range'] = None
-                elif isinstance(obj['time_range'], list):
-                    obj['time_range'] = tuple(obj['time_range'])
-                
-            if 'depth_range' in obj:
-                if obj['depth_range'] is None or obj['depth_range'] == [None, None]:
-                    obj['depth_range'] = None
-                elif isinstance(obj['depth_range'], list):
-                    obj['depth_range'] = tuple(obj['depth_range'])
-            
+            if "time_range" in obj:
+                if obj["time_range"] is None or obj["time_range"] == [None, None]:
+                    obj["time_range"] = None
+                elif isinstance(obj["time_range"], list):
+                    obj["time_range"] = tuple(obj["time_range"])
+
+            if "depth_range" in obj:
+                if obj["depth_range"] is None or obj["depth_range"] == [None, None]:
+                    obj["depth_range"] = None
+                elif isinstance(obj["depth_range"], list):
+                    obj["depth_range"] = tuple(obj["depth_range"])
+
             print(f"✓ Extracted intent: {obj}")
             return ScientificIntent(**obj)
-            
+
         except json.JSONDecodeError as e:
             print(f"⚠️ Failed to parse LLM response as JSON: {e}")
             print(f"Response was: {content}")
@@ -246,24 +251,26 @@ def fallback_intent_extraction(query: str) -> ScientificIntent:
 
     # Time range detection
     time_range = None
-    
+
     # Check for specific time range patterns
-    if 'last month' in q:
-        time_range = parse_relative_time('last month')
-    elif 'last week' in q:
-        time_range = parse_relative_time('last week')
-    elif 'last year' in q:
-        time_range = parse_relative_time('last year')
-    elif 'last' in q and ('day' in q or 'days' in q):
+    if "last month" in q:
+        time_range = parse_relative_time("last month")
+    elif "last week" in q:
+        time_range = parse_relative_time("last week")
+    elif "last year" in q:
+        time_range = parse_relative_time("last year")
+    elif "last" in q and ("day" in q or "days" in q):
         # Extract number of days if specified (e.g., 'last 30 days')
-        match = re.search(r'last\s+(\d+)\s+day', q)
+        match = re.search(r"last\s+(\d+)\s+day", q)
         if match:
             num_days = int(match.group(1))
-            time_range = parse_relative_time(f'last {num_days} days')
+            time_range = parse_relative_time(f"last {num_days} days")
         else:
-            time_range = parse_relative_time('last 1 days')
-    
-    obj["time_range"] = time_range if time_range and time_range[0] and time_range[1] else None
+            time_range = parse_relative_time("last 1 days")
+
+    obj["time_range"] = (
+        time_range if time_range and time_range[0] and time_range[1] else None
+    )
 
     # Set defaults for other fields
     obj.setdefault("location", None)
@@ -284,7 +291,7 @@ if __name__ == "__main__":
         "Temperature data from last month near Mumbai",
         "What's the nitrate level at 500m depth?",
         "Show me temperature for last 30 days",
-        "Salinity trend in last week"
+        "Salinity trend in last week",
     ]
 
     for query in test_queries:
