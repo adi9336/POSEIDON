@@ -10,4 +10,6 @@ black==26.1a1
 isort==7.0.0
 flake8==7.3.0
 flake8-black==0.4.0
+matplotlib>=3.10.8
+seaborn>=0.13.2
 flake8-isort==7.0.0
