@@ -1,5 +1,6 @@
 langgraph==0.1.19
 langchain-core==0.2.43
+langchain-community==0.2.4
 langchain-openai==0.1.25
 pandas==2.3.3
 requests==2.32.5
@@ -10,6 +11,7 @@ black==26.1a1
 isort==7.0.0
 flake8==7.3.0
 flake8-black==0.4.0
+flake8-isort==7.0.0
 matplotlib>=3.10.8
 seaborn>=0.13.2
-flake8-isort==7.0.0
+SQLAlchemy>=2.0.0
