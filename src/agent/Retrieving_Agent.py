@@ -195,7 +195,14 @@ def run_argo_workflow(query: str) -> dict:
 # ---------------------------------------------------------
 if __name__ == "__main__":
     # Example queries
-    test_queries = ["What's the salinity at 500m depth near black sea in last month?"]
+    test_queries = [
+        "What's the salinity at 500m depth near the Black Sea in last month?",
+        "What's the salinity at 500m depth near the Black Sea in the last month?",
+        "What's the salinity at 1000m depth in the Mediteranse Sea during November?",
+        "What's the salinity at 200m depth near the Red Sea in the past week?",
+        "What's the salinity at 750m depth in the Arabian Sea last month?",
+        "What's the salinity at 300m depth near the Baltic Sea recently?"
+    ]
 
     for query in test_queries:
         print(f"\n\n{'='*70}")
