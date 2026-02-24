@@ -1,127 +1,113 @@
-# 🌊 POSEIDON: Oceanographic Data Analysis System
+# POSEIDON: Multi-Agent Oceanographic Analysis
 
-[![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub stars](https://img.shields.io/github/stars/adi9336/POSEIDON?style=social)](https://github.com/adi9336/POSEIDON/stargazers)
+POSEIDON is a multi-agent oceanographic analysis system for Argo float data.  
+It supports natural language querying, retrieval, analysis, validation, and rich interactive visualization.
 
-POSEIDON is an advanced oceanographic data analysis system that processes and analyzes Argo float data to provide meaningful insights about ocean conditions. The system uses natural language processing to understand user queries and generates SQL queries to retrieve relevant data from a database.
+## Features
 
+- Multi-agent orchestration (`query_understanding -> data_retrieval -> analysis -> validation`)
+- Natural language query parsing (location, depth, time range, variables)
+- Argo ERDDAP data retrieval + SQLite-backed analytics
+- Validation with confidence scoring, time-window checks, and outlier-rate checks
+- Streamlit app with:
+  - live execution progress events
+  - diagnostics cards
+  - Plotly interactive visualizations (trends, depth profile, geo view, correlations)
+- FastAPI endpoints including `/v1/query` and `/v1/stream/{conversation_id}`
 
-
-<img width="1460" height="1022" alt="Screenshot 2025-11-23 120743" src="https://github.com/user-attachments/assets/f2a27ddf-2b9f-42df-93eb-299ec3e6f37f" />
-
-<img width="1178" height="885" alt="Screenshot 2025-11-23 120908" src="https://github.com/user-attachments/assets/aec2ff5d-b73d-4bcf-afe3-9ab33020878f" />
-
-
-# Read the current README content
-$readmeContent = Get-Content -Path .\README.md -Raw
-
-
-# Save the updated content back to README.md
-$updatedReadme | Set-Content -Path .\README.md -Encoding UTF8`
-
-## 🌟 Features
-
-- **Natural Language Processing**: Understands complex oceanographic queries
-- **Data Retrieval**: Fetches data from Argo floats based on location, depth, and time
-- **SQL Generation**: Automatically generates optimized SQL queries
-- **Data Analysis**: Provides statistical insights and summaries
-- **Interactive**: Easy-to-use command-line interface
-
-## 🚀 Quick Start
-
-### Prerequisites
+## Requirements
 
 - Python 3.11+
-- Git
-- [Poetry](https://python-poetry.org/) (for dependency management)
+- OpenAI API key
 
-### Installation
+## Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/adi9336/POSEIDON.git
-   cd POSEIDON
-   ```
-
-2. **Set up the environment**
-   ```bash
-   # Install Poetry if you haven't already
-   pip install poetry
-   
-   # Install dependencies
-   poetry install
-   
-   # Activate the virtual environment
-   poetry shell
-   ```
-
-3. **Set up environment variables**
-   Create a `.env` file in the root directory with your OpenAI API key:
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
-
-## 🛠 Usage
-
-### Running the Application
-
-```bash
-# Run the main application
-python src/agent/Retrieving_Agent.py
-
-# Or run with a specific query
-python src/agent/Retrieving_Agent.py "What is the temperature at 500m depth near Mumbai in January 2024?"
+```powershell
+git clone https://github.com/adi9336/POSEIDON.git
+cd POSEIDON
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\pip3.exe install -r requirements.txt
 ```
 
-### Example Queries
+Create `.env` in project root:
 
-- "Show me temperature data from the last 30 days near Hawaii"
-- "What's the average salinity at 1000m depth in the Pacific Ocean?"
-- "Find all measurements from Argo float WMO_1902671"
-- "Compare temperature trends between 2023 and 2024 in the Atlantic"
-
-## 🏗 Project Structure
-
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 ```
+
+## Run Streamlit App
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+streamlit run app.py
+```
+
+App URL:
+- `http://localhost:8501`
+
+## Run FastAPI Server
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+uvicorn src.api.server:app --reload
+```
+
+API URLs:
+- Docs: `http://127.0.0.1:8000/docs`
+- OpenAPI: `http://127.0.0.1:8000/openapi.json`
+- Health: `http://127.0.0.1:8000/health`
+
+## API Endpoints
+
+- `POST /query`  
+  Legacy compatibility endpoint.
+
+- `POST /v1/query`  
+  Multi-agent orchestrator response (`status`, `result`, `confidence`, `trace_id`).
+
+- `WS /v1/stream/{conversation_id}`  
+  Execution event streaming.
+
+## Example Query
+
+```json
+{
+  "query": "Analyze temperature, salinity, and nitrate near Arabian Sea from 2024-05-01 to 2024-06-30 and give key insights.",
+  "mode": "multi"
+}
+```
+
+## Tests
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+## Project Structure
+
+```text
 POSEIDON/
-├── data/                    # Data storage directory
+├── app.py
+├── config/
+├── docs/
 ├── src/
-│   ├── agent/               # Main agent and workflow code
-│   ├── state/               # State management and models
-│   └── tools/               # Data processing and utility functions
-├── tests/                   # Unit and integration tests
-├── .env.example            # Example environment variables
-├── pyproject.toml          # Project configuration
-└── README.md               # This file
+│   ├── agent/
+│   ├── agents/
+│   ├── api/
+│   ├── memory/
+│   ├── orchestrator/
+│   ├── skills/
+│   ├── state/
+│   └── tools/
+├── tests/
+├── requirements.txt
+└── pyproject.toml
 ```
 
-## 🤝 Contributing
+## Notes
 
-We welcome contributions! Please follow these steps:
+- `argo_data.db` is runtime state and should generally not be committed.
+- If you see OpenAI `401 invalid_api_key`, rotate/update your key in `.env`.
 
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Argo Program for providing the oceanographic data
-- OpenAI for the language models
-- All contributors who have helped improve this project
-
-## 📧 Contact
-
-For any questions or suggestions, please open an issue or contact the maintainers.
-
----
-
-<div align="center">
-  Made with ❤️ by the POSEIDON team
-</div>
