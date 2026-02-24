@@ -8,7 +8,7 @@ from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(override=True)
 
 
 class ReactAgent:
@@ -59,10 +59,14 @@ class ReactAgent:
     def _create_agent(self) -> AgentExecutor:
         """Create and return a ReAct agent with proper prompt template."""
         # Get API key from environment variables
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
+        api_key = (os.getenv("OPENAI_API_KEY") or "").strip()
+        if (
+            not api_key
+            or api_key == "your_openai_api_key_here"
+            or not api_key.startswith("sk-")
+        ):
             raise ValueError(
-                "OPENAI_API_KEY environment variable not set. Please set it in your .env file."
+                "OPENAI_API_KEY is missing or invalid in environment/.env."
             )
 
         llm = ChatOpenAI(temperature=0, model="gpt-4", openai_api_key=api_key)
@@ -108,7 +112,8 @@ Thought:{agent_scratchpad}"""
             agent=agent,
             tools=self.tools,
             handle_parsing_errors=True,
-            verbose=True,
+            # Avoid noisy callback handler crashes with certain LangChain versions.
+            verbose=False,
             max_iterations=5,  # Limit iterations to prevent infinite loops
             max_execution_time=60,  # Timeout after 60 seconds
         )

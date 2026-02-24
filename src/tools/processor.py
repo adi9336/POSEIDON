@@ -71,15 +71,10 @@ class ArgoDataProcessor:
 
     def _create_tables(self, conn: sqlite3.Connection):
         """Create necessary database tables if they don't exist."""
-        logger.info("🔨 Creating/verifying database schema...")
+        logger.info("Creating/verifying database schema...")
 
-        # First, drop the table if it exists to ensure clean schema
-        conn.execute("DROP TABLE IF EXISTS argo_data")
-        logger.info("✅ Old table dropped (if existed)")
-
-        # Create the table with the correct schema
         conn.execute("""
-            CREATE TABLE argo_data (
+            CREATE TABLE IF NOT EXISTS argo_data (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 platform_number TEXT,
                 latitude REAL,
@@ -88,44 +83,69 @@ class ArgoDataProcessor:
                 temp REAL,
                 psal REAL,
                 pres REAL,
-                nitrate REAL,
-                CONSTRAINT idx_lat_lon_time UNIQUE (latitude, longitude, time, pres)
+                nitrate REAL
             )
         """)
-        logger.info("✅ argo_data table created successfully")
+        logger.info("argo_data table verified/created")
 
-        # Create additional indexes
+        conn.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_lat_lon_time ON argo_data(latitude, longitude, time, pres)"
+        )
         conn.execute("CREATE INDEX IF NOT EXISTS idx_pres ON argo_data(pres)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_time ON argo_data(time)")
-        logger.info("✅ Database indexes created successfully")
+        logger.info("Database indexes created successfully")
 
     def _should_import_data(self, conn: sqlite3.Connection) -> bool:
         """Check if we need to import data into the database."""
         count = conn.execute("SELECT COUNT(*) FROM argo_data;").fetchone()[0]
-        logger.info(f"📊 Current database row count: {count}")
-        should_import = (
-            count == 0
-            and self.state
-            and hasattr(self.state, "raw_data")
-            and self.state.raw_data
-        )
-        return should_import
+        logger.info(f"Current database row count: {count}")
+        if not self.state or not hasattr(self.state, "raw_data"):
+            return False
+        raw_data = (self.state.raw_data or "").strip()
+        if not raw_data:
+            return False
+        return Path(raw_data).exists()
 
     def _import_initial_data(self, conn: sqlite3.Connection):
         """Import initial data from CSV if available."""
         try:
-            logger.info(f"📂 Reading CSV file: {self.state.raw_data}")
+            logger.info(f"Reading CSV file: {self.state.raw_data}")
             df = pd.read_csv(self.state.raw_data)
-            logger.info(f"✅ CSV loaded: {len(df)} rows, {len(df.columns)} columns")
+            logger.info(f"CSV loaded: {len(df)} rows, {len(df.columns)} columns")
 
-            logger.info("💾 Importing data to database...")
-            df.to_sql("argo_data", conn, if_exists="append", index=False)
+            if "nitrate" not in df.columns:
+                df["nitrate"] = None
+
+            required_cols = [
+                "platform_number",
+                "latitude",
+                "longitude",
+                "time",
+                "temp",
+                "psal",
+                "pres",
+                "nitrate",
+            ]
+            df = df[required_cols].copy()
+
+            logger.info("Importing data to database with deduplication...")
+            insert_sql = """
+                INSERT OR IGNORE INTO argo_data
+                (platform_number, latitude, longitude, time, temp, psal, pres, nitrate)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """
+            rows = list(df.itertuples(index=False, name=None))
+            before = conn.execute("SELECT COUNT(*) FROM argo_data;").fetchone()[0]
+            conn.executemany(insert_sql, rows)
+            conn.commit()
+            after = conn.execute("SELECT COUNT(*) FROM argo_data;").fetchone()[0]
+            inserted = after - before
             logger.info(
-                f"✅ Successfully imported {len(df)} rows from {self.state.raw_data}"
+                f"Imported {inserted} new rows ({len(rows)} processed) from {self.state.raw_data}"
             )
 
         except Exception as e:
-            logger.error(f"❌ Error importing data: {e}")
+            logger.error(f"Error importing data: {e}")
             raise
 
     def _init_llm(self):
@@ -462,3 +482,4 @@ def process_data(state: FloatChatState) -> FloatChatState:
         state.error = error_msg
 
     return state
+

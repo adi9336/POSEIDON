@@ -1,0 +1,18 @@
+agents:
+  query_understanding:
+    enabled: true
+    retries: 2
+    timeout_ms: 30000
+  data_retrieval:
+    enabled: true
+    retries: 2
+    timeout_ms: 60000
+  analysis:
+    enabled: true
+    retries: 2
+    timeout_ms: 90000
+  visualization:
+    enabled: false
+  validation:
+    enabled: false
+

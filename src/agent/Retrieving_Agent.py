@@ -99,7 +99,7 @@ def fetch_data(state: FloatChatState) -> FloatChatState:
                 intent=state.intent,
                 dataset=state.dataset,
                 erddap_url=state.erddap_url,
-                raw_data=None,
+                raw_data="",
                 processed=state.processed,
                 final_answer=error_msg,
             )

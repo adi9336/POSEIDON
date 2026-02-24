@@ -1,0 +1,15 @@
+policies:
+  default_provider: openai
+  max_task_retries: 2
+  max_query_retries: 3
+  max_latency_budget_ms: 120000
+  default_models:
+    orchestrator: gpt-4o-mini
+    query_understanding: gpt-4o-mini
+    data_retrieval: gpt-4o-mini
+    analysis: gpt-4o-mini
+  provider_fallback:
+    - openai:gpt-4o-mini
+    - openai:gpt-4.1-mini
+    - anthropic:claude-3-5-sonnet-latest
+

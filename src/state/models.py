@@ -3,7 +3,7 @@ State models for the Argo Float Chat system.
 These models define the data structures used throughout the workflow.
 """
 
-from pydantic import BaseModel, field_validator, Field
+from pydantic import BaseModel, field_validator, Field, ConfigDict
 from typing import Optional, Tuple, Dict, Any, List, Union
 from datetime import datetime
 from enum import Enum
@@ -55,11 +55,10 @@ class FloatChatState(BaseModel):
     )
     error: Optional[str] = None  # Stores error message if status is "error"
 
-    class Config:
-        arbitrary_types_allowed = True  # Allow pandas DataFrame
-        json_encoders = {
-            datetime: lambda v: v.isoformat(),
-        }
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        json_encoders={datetime: lambda v: v.isoformat()},
+    )
 
 
 class AgentRole(str, Enum):

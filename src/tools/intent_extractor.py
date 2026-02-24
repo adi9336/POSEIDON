@@ -2,6 +2,7 @@ import os
 import json
 import datetime
 import re
+import calendar
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -271,6 +272,49 @@ def fallback_intent_extraction(query: str) -> ScientificIntent:
     obj["time_range"] = (
         time_range if time_range and time_range[0] and time_range[1] else None
     )
+
+    # Absolute month/year patterns (e.g., "January 2024", "jan 2024")
+    if obj["time_range"] is None:
+        month_map = {
+            "jan": 1, "january": 1,
+            "feb": 2, "february": 2,
+            "mar": 3, "march": 3,
+            "apr": 4, "april": 4,
+            "may": 5,
+            "jun": 6, "june": 6,
+            "jul": 7, "july": 7,
+            "aug": 8, "august": 8,
+            "sep": 9, "sept": 9, "september": 9,
+            "oct": 10, "october": 10,
+            "nov": 11, "november": 11,
+            "dec": 12, "december": 12,
+        }
+        m = re.search(
+            r"\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+(\d{4})\b",
+            q,
+        )
+        if m:
+            mon = month_map[m.group(1)]
+            year = int(m.group(2))
+            last_day = calendar.monthrange(year, mon)[1]
+            obj["time_range"] = (
+                f"{year:04d}-{mon:02d}-01",
+                f"{year:04d}-{mon:02d}-{last_day:02d}",
+            )
+
+    # Location detection for patterns like "near Mumbai in January 2024", "in Arabian Sea", "at Goa"
+    loc_match = re.search(
+        r"\bnear\s+([a-z][a-z\s\-]{1,60}?)(?:\s+in\s+[a-z]+\s+\d{4}|\s+in\b|\s+last\b|[?.!,]|$)",
+        q,
+    )
+    if not loc_match:
+        loc_match = re.search(
+            r"\b(?:in|at)\s+([a-z][a-z\s\-]{1,60}?)(?:\s+(?:during|for|last)\b|[?.!,]|$)",
+            q,
+        )
+    if loc_match:
+        raw_location = loc_match.group(1).strip(" .,!?:;")
+        obj["location"] = " ".join([w.capitalize() for w in raw_location.split()])
 
     # Set defaults for other fields
     obj.setdefault("location", None)

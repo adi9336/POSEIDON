@@ -1,0 +1,14 @@
+tools:
+  sql_generator:
+    enabled: true
+  data_fetcher:
+    enabled: true
+  statistics:
+    enabled: true
+  trend_analyzer:
+    enabled: true
+  geospatial:
+    enabled: true
+  export:
+    enabled: true
+

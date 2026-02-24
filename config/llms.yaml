@@ -1,0 +1,17 @@
+llms:
+  orchestrator:
+    provider: openai
+    model: gpt-4o-mini
+    fallback:
+      - openai:gpt-4.1-mini
+      - anthropic:claude-3-5-sonnet-latest
+  query_understanding:
+    provider: openai
+    model: gpt-4o-mini
+  data_retrieval:
+    provider: openai
+    model: gpt-4o-mini
+  analysis:
+    provider: openai
+    model: gpt-4o-mini
+
