@@ -1,0 +1,26 @@
+campaigns:
+  anomaly_watch:
+    enabled: true
+    hour: 6
+    alert_threshold: 0.10
+    regions:
+      - Arabian Sea
+      - Bay of Bengal
+      - Indian Ocean
+
+  weekly_report:
+    enabled: true
+    hour: 7
+    regions:
+      - Arabian Sea
+      - Bay of Bengal
+      - Indian Ocean
+      - North Pacific Ocean
+      - North Atlantic Ocean
+
+  float_watcher:
+    enabled: true
+    float_ids:
+      - "6900000"
+      - "6900001"
+      - "3902123"

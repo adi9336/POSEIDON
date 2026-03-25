@@ -5,20 +5,34 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "poseidon"
 version = "0.1.0"
-description = "Scientific data analysis and visualization tool"
+description = "Multi-agent oceanographic analysis system for Argo float data"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 dependencies = [
-    "python-dotenv>=1.0.0",
-    "langchain-openai>=0.1.0",
-    "langgraph>=0.1.19",
+    "apscheduler>=3.10.0",
     "fastapi>=0.116.0",
-    "uvicorn>=0.35.0",
-    "redis>=6.4.0",
-    "pyyaml>=6.0.2",
+    "folium>=0.18.0",
+    "gsw>=3.6.0",
+    "langchain-community==0.2.4",
+    "langchain-core==0.2.43",
+    "langchain-openai==0.1.25",
+    "langgraph==0.1.19",
+    "langsmith>=0.1.0",
+    "openai==1.109.1",
+    "pandas==2.3.3",
     "plotly>=6.5.2",
     "pydantic>=2.0.0",
+    "python-dotenv==1.2.1",
+    "pyyaml>=6.0.2",
+    "redis>=6.4.0",
     "requests>=2.31.0",
+    "scipy>=1.11.0",
+    "shapely>=2.0.0",
+    "streamlit==1.52.2",
+    "streamlit-folium>=0.23.0",
+    "SQLAlchemy>=2.0.0",
+    "thefuzz[speedup]>=0.22.0",
+    "uvicorn>=0.35.0",
 ]
 
 [tool.setuptools.packages.find]

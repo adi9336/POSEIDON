@@ -4,6 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 from typing import Any, Dict, List
 
+from langsmith import traceable
+
 from src.agents.base_agent import BaseAgent
 from src.state.models import FloatChatState, ScientificIntent
 from src.state.schemas import AgentResult, AgentTask
@@ -13,6 +15,7 @@ from src.tools.processor import ArgoDataProcessor
 class AnalysisAgent(BaseAgent):
     name = "analysis"
 
+    @traceable(name="analysis_plan")
     def plan(self, context: Dict[str, Any]) -> List[AgentTask]:
         return [
             AgentTask(
@@ -27,6 +30,7 @@ class AnalysisAgent(BaseAgent):
             )
         ]
 
+    @traceable(name="analysis_execute")
     def execute(self, task: AgentTask, context: Dict[str, Any]) -> AgentResult:
         started = time.perf_counter()
         try:
@@ -82,6 +86,41 @@ class AnalysisAgent(BaseAgent):
                 latency_ms=int((time.perf_counter() - started) * 1000),
             )
 
+    def _build_enriched_prompt(self, query: str, computed: dict, context: dict) -> str:
+        """Build an LLM prompt enriched with historical context when available."""
+        baseline = context.get("historical_baseline", {})
+        trend    = context.get("trend_context", {})
+        recent   = context.get("recent_summaries", [])
+        anomaly  = context.get("last_anomaly")
+        n_obs    = context.get("n_past_observations", 0)
+
+        history_section = ""
+        if n_obs > 0:
+            history_section = f"""
+Historical context ({n_obs} past observations, 30-day rolling):
+- Avg thermocline: {baseline.get('avg_thermocline_m', 'N/A')}m
+- Avg surface temp: {baseline.get('avg_surface_temp', 'N/A')}°C
+- Thermocline trend: {trend.get('thermocline_trend', 'insufficient data')}
+- Temperature trend: {trend.get('temperature_trend', 'insufficient data')}
+- Most relevant past finding: "{recent[0] if recent else 'none'}"
+- Last anomaly event: {anomaly['recorded_at'] if anomaly else 'none on record'}
+"""
+
+        return f"""You are a physical oceanographer. Analyze these COMPUTED results for query: "{query}"
+
+Current analysis:
+- Thermocline depth: {computed.get('thermocline_depth_m', 'N/A')}m
+- Surface temperature: {computed.get('surface_temp', 'N/A')}°C
+- Bottom temperature: {computed.get('temperature_at_max_depth', 'N/A')}°C
+- Water column: {'stratified' if computed.get('is_stratified') else 'unstable'}
+- Water mass: {computed.get('water_mass_prediction', 'unclassified')}
+- Anomaly rate: {computed.get('anomaly_rate', 'N/A')}
+{history_section}
+Write 3-5 sentences of scientific interpretation.
+If history is available, explicitly compare current to baseline.
+Reference specific numbers. Be precise. Avoid generic language."""
+
+    @traceable(name="build_variable_insights")
     def _build_variable_insights_parallel(
         self, rows: List[Dict[str, Any]], requested_variables: List[str]
     ) -> Dict[str, Dict[str, Any]]:

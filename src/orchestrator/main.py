@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import os
 import time
 from collections import defaultdict
@@ -7,14 +8,20 @@ from typing import Any, Callable, Dict, List, TypedDict
 from uuid import uuid4
 
 from langgraph.graph import END, StateGraph
+from langsmith import traceable
 
 from src.agent.Retrieving_Agent import run_argo_workflow
 from src.agents.analysis.agent import AnalysisAgent
 from src.agents.data_retrieval.agent import DataRetrievalAgent
 from src.agents.query_understanding.agent import QueryUnderstandingAgent
 from src.agents.validation.agent import ValidationAgent
+from src.memory.context_builder import ContextBuilder
+from src.memory.insight_store import InsightStore
 from src.orchestrator.router import PolicyRouter
 from src.orchestrator.state_manager import StateManager
+from src.tools.intent_extractor_model import extract_intent_fast
+
+log = logging.getLogger(__name__)
 from src.state.schemas import (
     AgentResult,
     EventType,
@@ -51,6 +58,8 @@ class PoseidonOrchestrator:
         self.max_task_retries = 2
         self.max_query_retries = 3
         self._events: Dict[str, List[StreamEvent]] = defaultdict(list)
+        self.context_builder = ContextBuilder()
+        self.insight_store   = InsightStore()
         self._graph = self._build_graph()
 
     def _emit(self, event: StreamEvent) -> None:
@@ -61,6 +70,7 @@ class PoseidonOrchestrator:
         self._events[conversation_id] = []
         return events
 
+    @traceable(name="run_with_retry")
     def _run_with_retry(
         self,
         fn: Callable[[], AgentResult],
@@ -110,8 +120,47 @@ class PoseidonOrchestrator:
         graph.set_entry_point("understanding")
         return graph.compile()
 
+    @traceable(name="query_understanding_node")
     def _understanding_node(self, state: WorkflowState) -> WorkflowState:
         context = state.get("context", {})
+
+        # ── Memory enrichment: fetch relevant past insights ──────────
+        try:
+            fast_intent = extract_intent_fast(state["query"])
+            historical  = self.context_builder.build(fast_intent.model_dump())
+            context.update(historical)
+            self._emit(
+                StreamEvent(
+                    event_type=EventType.AGENT_PROGRESS,
+                    trace_id=state["trace_id"],
+                    conversation_id=state["conversation_id"],
+                    message=f"History loaded: {historical['n_past_observations']} past observations for {historical['region_resolved']}",
+                    data={"history_available": historical["history_available"]}
+                )
+            )
+        except Exception as exc:
+            log.warning(f"Context enrichment failed (non-fatal): {exc}")
+        # ─────────────────────────────────────────────────────────────
+
+        # If Supervisor already confirmed intent, use it directly
+        intent_override = context.get("intent_override")
+        if intent_override:
+            intent = intent_override
+            context["intent"] = intent
+            context["requested_variables"] = [intent.get("variable", "temp")]
+            context["understanding_confidence"] = 0.95  # High confidence since user confirmed
+            self._emit(
+                StreamEvent(
+                    event_type=EventType.AGENT_PROGRESS,
+                    trace_id=state["trace_id"],
+                    conversation_id=state["conversation_id"],
+                    message="Using Supervisor-confirmed parameters",
+                    data={"intent": intent, "confidence": 0.95},
+                )
+            )
+            return {"context": context}
+
+        # Otherwise, extract intent from query as before
         task = self.query_agent.plan({"query": state["query"]})[0]
         result = self._run_with_retry(
             lambda: self.query_agent.execute(task, context),
@@ -141,6 +190,7 @@ class PoseidonOrchestrator:
             "clarification_question": result.data.get("clarification_question", ""),
         }
 
+    @traceable(name="data_retrieval_node")
     def _retrieval_node(self, state: WorkflowState) -> WorkflowState:
         if state.get("clarification_needed"):
             return {}
@@ -171,6 +221,7 @@ class PoseidonOrchestrator:
         )
         return {"context": context}
 
+    @traceable(name="analysis_node")
     def _analysis_node(self, state: WorkflowState) -> WorkflowState:
         if state.get("clarification_needed"):
             return {}
@@ -195,6 +246,7 @@ class PoseidonOrchestrator:
         context["analysis_confidence"] = result.confidence
         return {"context": context}
 
+    @traceable(name="validation_node")
     def _validation_node(self, state: WorkflowState) -> WorkflowState:
         if state.get("clarification_needed"):
             return {}
@@ -227,6 +279,7 @@ class PoseidonOrchestrator:
         )
         return {"context": context}
 
+    @traceable(name="finalize_node")
     def _finalize_node(self, state: WorkflowState) -> WorkflowState:
         context = state.get("context", {})
         if state.get("clarification_needed"):
@@ -246,21 +299,31 @@ class PoseidonOrchestrator:
                 + context.get("analysis_confidence", 0.0) * 0.5
             ),
         )
-        return {
-            "result": {
-                "status": "success",
-                "summary": context.get("analysis", {}).get("summary", ""),
-                "data": context.get("analysis", {}).get("data", []),
-                "row_count": context.get("analysis", {}).get("row_count", 0),
-                "columns": context.get("analysis", {}).get("columns", []),
-                "intent": context.get("intent", {}),
-                "retrieval": context.get("retrieval", {}),
-                "analysis": context.get("analysis", {}).get("analysis", {}),
-                "variable_insights": context.get("analysis", {}).get("variable_insights", {}),
-                "validation": quality_report,
-                "confidence": round(float(overall_confidence), 3),
-            }
+        result = {
+            "status": "success",
+            "summary": context.get("analysis", {}).get("summary", ""),
+            "data": context.get("analysis", {}).get("data", []),
+            "row_count": context.get("analysis", {}).get("row_count", 0),
+            "columns": context.get("analysis", {}).get("columns", []),
+            "intent": context.get("intent", {}),
+            "retrieval": context.get("retrieval", {}),
+            "analysis": context.get("analysis", {}).get("analysis", {}),
+            "variable_insights": context.get("analysis", {}).get("variable_insights", {}),
+            "validation": quality_report,
+            "confidence": round(float(overall_confidence), 3),
         }
+
+        # ── Write to insight store (memory write-back) ────────────────
+        try:
+            region = context.get("region_resolved") or \
+                     context.get("intent", {}).get("location", "unknown")
+            source = state.get("campaign_source", "chatbot")
+            self.insight_store.write(result, region=region, source=source)
+        except Exception as exc:
+            log.warning(f"Insight store write failed (non-fatal): {exc}")
+        # ─────────────────────────────────────────────────────────────
+
+        return {"result": result}
 
     def _run_legacy(self, request: OrchestratorRequest) -> OrchestratorResponse:
         result = run_argo_workflow(request.query)
@@ -281,6 +344,7 @@ class PoseidonOrchestrator:
             confidence=0.7,
         )
 
+    @traceable(name="poseidon_orchestrator_execute")
     def execute(self, request: OrchestratorRequest) -> OrchestratorResponse:
         mode = os.getenv("POSEIDON_ORCHESTRATOR_MODE", request.mode).lower()
         if mode == "legacy":
@@ -305,6 +369,11 @@ class PoseidonOrchestrator:
                 "latency_budget_ms": request.latency_budget_ms,
                 "cost_budget": request.cost_budget,
                 "provider_health": {"openai": "healthy", "anthropic": "unknown"},
+                **(  # Inject Supervisor-confirmed intent if available
+                    {"intent_override": request.intent_override}
+                    if request.intent_override
+                    else {}
+                ),
             },
         }
 

@@ -1,9 +1,12 @@
-﻿# Python
+# Python
 __pycache__/
 *.py[cod]
 *.class
 *.so
 .Python
+.pytest_cache/
+pytest-cache-files-*/
+.venv/
 env/
 venv/
 ENV/
@@ -18,10 +21,21 @@ venv.bak/
 
 # Environment variables
 .env
+.streamlit/secrets.toml
 
 # Data
 data/
 !data/README.md
+argo_data.db
 
 # Logs
 *.log
+logs/*.jsonl
+
+# POSEIDON persistent storage
+db/
+models/
+reports/
+
+# Packaging / generated metadata
+*.egg-info/

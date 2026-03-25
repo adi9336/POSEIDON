@@ -3,6 +3,8 @@ from __future__ import annotations
 import time
 from typing import Any, Dict, List
 
+from langsmith import traceable
+
 from src.agents.base_agent import BaseAgent
 from src.state.models import FloatChatState, ScientificIntent
 from src.state.schemas import AgentResult, AgentTask
@@ -12,6 +14,7 @@ from src.tools.fetcher import fetch_argo_data
 class DataRetrievalAgent(BaseAgent):
     name = "data_retrieval"
 
+    @traceable(name="data_retrieval_plan")
     def plan(self, context: Dict[str, Any]) -> List[AgentTask]:
         return [
             AgentTask(
@@ -25,6 +28,7 @@ class DataRetrievalAgent(BaseAgent):
             )
         ]
 
+    @traceable(name="data_retrieval_execute")
     def execute(self, task: AgentTask, context: Dict[str, Any]) -> AgentResult:
         started = time.perf_counter()
         try:

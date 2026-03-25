@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from src.core.paths import ARGO_DB_PATH, ensure_runtime_dirs
 from src.agent.Retrieving_Agent import run_argo_workflow
 from src.orchestrator.main import PoseidonOrchestrator
 from src.state.schemas import (
@@ -26,6 +27,7 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
+ensure_runtime_dirs()
 
 app = FastAPI(
     title="POSEIDON API",
@@ -114,7 +116,7 @@ async def root():
 @app.get("/health")
 async def health_check():
     try:
-        with sqlite3.connect("argo_data.db") as conn:
+        with sqlite3.connect(ARGO_DB_PATH) as conn:
             count = conn.execute("SELECT COUNT(*) FROM argo_data").fetchone()[0]
         return {"status": "healthy", "database": "connected", "records": count}
     except Exception as e:
@@ -180,7 +182,7 @@ async def get_example_queries():
 @app.get("/stats")
 async def get_database_stats():
     try:
-        with sqlite3.connect("argo_data.db") as conn:
+        with sqlite3.connect(ARGO_DB_PATH) as conn:
             total = conn.execute("SELECT COUNT(*) FROM argo_data").fetchone()[0]
             depth_stats = conn.execute(
                 "SELECT MIN(pres) as min_depth, MAX(pres) as max_depth FROM argo_data"

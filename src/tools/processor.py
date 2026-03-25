@@ -11,8 +11,10 @@ from langchain_openai import ChatOpenAI
 from langchain_community.utilities import SQLDatabase
 from langchain_community.tools import QuerySQLDataBaseTool
 from langchain_core.messages import HumanMessage
+from langsmith import traceable
 
 # Local imports
+from src.core.paths import ARGO_DB_PATH
 from src.state.models import FloatChatState, ScientificIntent
 
 # Configure logging with colored output
@@ -24,7 +26,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Constants
-DB_PATH = "argo_data.db"
+DB_PATH = str(ARGO_DB_PATH)
 DEFAULT_LAT_LON_RANGE = 3.0  # ±3 degrees
 DEFAULT_DEPTH_TOLERANCE = 10.0  # meters
 DEFAULT_QUERY_LIMIT = 100
@@ -244,6 +246,7 @@ class ArgoDataProcessor:
         )
         return where_clause, params
 
+    @traceable(name="execute_sql_query")
     def execute_sql_query(
         self, query: str, params: Optional[Dict] = None
     ) -> pd.DataFrame:
@@ -258,6 +261,7 @@ class ArgoDataProcessor:
             logger.error(f"❌ SQL query error: {e}")
             raise
 
+    @traceable(name="generate_nlp_summary", run_type="llm")
     def generate_nlp_summary(self, df: pd.DataFrame, query: str) -> str:
         """Generate a natural language summary of the query results using OpenAI."""
         logger.info("📝 Generating natural language summary...")
@@ -343,6 +347,7 @@ class ArgoDataProcessor:
                 logger.error("❌ Summary generation completely failed")
                 return "Summary generation failed. Please check the data manually."
 
+    @traceable(name="process_query")
     def process_query(self, query: str) -> Dict[str, Any]:
         """Process a natural language query and return structured results."""
         try:
@@ -425,6 +430,7 @@ class ArgoDataProcessor:
             return {"status": "error", "message": error_msg}
 
 
+@traceable(name="process_data_node")
 def process_data(state: FloatChatState) -> FloatChatState:
     """
     LangGraph node that processes data based on the current state.
@@ -482,4 +488,3 @@ def process_data(state: FloatChatState) -> FloatChatState:
         state.error = error_msg
 
     return state
-

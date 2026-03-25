@@ -4,12 +4,12 @@ Fetches oceanographic data from Argo floats using direct ERDDAP CSV API.
 """
 
 import datetime
-import os
 from typing import Optional
 import pandas as pd
 import requests
 from dotenv import load_dotenv
-from io import StringIO
+from langsmith import traceable
+from src.core.paths import DATA_DIR, ensure_runtime_dirs
 from src.state.models import FloatChatState
 
 # Import geosolver for location resolution
@@ -27,6 +27,7 @@ def get_default_time_range(days_back=30):
     return start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")
 
 
+@traceable(name="fetch_argo_data")
 def fetch_argo_data(
     intent, retry_with_broader_search=True, state: Optional[FloatChatState] = None
 ) -> pd.DataFrame:
@@ -68,6 +69,7 @@ def fetch_argo_data(
     return df
 
 
+@traceable(name="fetch_argo_erddap_request")
 def _fetch_with_params(
     intent, radius_degrees=3, days_back=30, state: Optional[FloatChatState] = None
 ) -> pd.DataFrame:
@@ -207,11 +209,10 @@ def _fetch_with_params(
                 print(f"   🎈 From {df['platform_number'].nunique()} unique floats")
 
             # Save to CSV
-            output_dir = "data"
-            os.makedirs(output_dir, exist_ok=True)
+            ensure_runtime_dirs()
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             output_file = f"argo_data_{timestamp}.csv"
-            output_path = os.path.join(output_dir, output_file)
+            output_path = DATA_DIR / output_file
 
             # Save the DataFrame to CSV
             df.to_csv(output_path, index=False)

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POSEIDON Project Workflow</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #dbe4f0;
+      --accent: #0f766e;
+      --accent2: #0369a1;
+      --warn: #92400e;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #eef4fb 0%, #f7fafc 100%);
+    }
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    h1, h2 {
+      margin: 8px 0;
+    }
+    p, li {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin: 14px 0;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.04);
+    }
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+    .chip {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      margin-right: 6px;
+      margin-bottom: 6px;
+      background: #f8fbff;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+    .node {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+      min-height: 110px;
+    }
+    .node h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: var(--accent2);
+    }
+    .arrow {
+      text-align: center;
+      color: var(--accent);
+      font-weight: 700;
+      margin: 2px 0;
+    }
+    code {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 12px;
+    }
+    .warn {
+      border-left: 4px solid var(--warn);
+      padding-left: 10px;
+    }
+    @media (max-width: 980px) {
+      .flow {
+        grid-template-columns: 1fr;
+      }
+      .arrow {
+        transform: rotate(90deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>POSEIDON Full Project Workflow</h1>
+    <p>
+      This page explains the end-to-end runtime architecture of POSEIDON, from Streamlit input to validated oceanographic output.
+    </p>
+
+    <div class="panel">
+      <h2>1. Deployment Entry Points</h2>
+      <p>
+        UI uses <code>streamlit_app.py</code> (delegates to <code>app.py</code>). API uses <code>src/api/server.py</code>.
+      </p>
+      <span class="chip">Streamlit: streamlit_app.py</span>
+      <span class="chip">UI Logic: app.py</span>
+      <span class="chip">API: src/api/server.py</span>
+      <span class="chip">Runtime Config: .streamlit/config.toml</span>
+      <span class="chip">Python Runtime: runtime.txt</span>
+    </div>
+
+    <div class="panel">
+      <h2>2. Primary Request Pipeline</h2>
+      <div class="flow">
+        <div class="node">
+          <h3>User Query</h3>
+          <p>User asks a natural-language ocean data question in Streamlit/API.</p>
+        </div>
+        <div class="node">
+          <h3>Supervisor Layer</h3>
+          <p><code>src/supervisor</code> decides clarify/map/approval/execute.</p>
+        </div>
+        <div class="node">
+          <h3>Orchestrator</h3>
+          <p><code>src/orchestrator/main.py</code> runs graph and emits events.</p>
+        </div>
+        <div class="node">
+          <h3>Agent Chain</h3>
+          <p>Understanding -> Retrieval -> Analysis -> Validation.</p>
+        </div>
+        <div class="node">
+          <h3>Response + Memory</h3>
+          <p>Return diagnostics/plots and persist insight context.</p>
+        </div>
+      </div>
+      <div class="arrow">User -> Supervisor -> Orchestrator -> Agents -> Output</div>
+    </div>
+
+    <div class="panel">
+      <h2>3. Orchestrator Stage Details</h2>
+      <div class="grid grid-2">
+        <div>
+          <h3>Understanding</h3>
+          <p>Extracts structured intent and requested variables from query text.</p>
+          <p>Module: <code>src/agents/query_understanding/agent.py</code></p>
+        </div>
+        <div>
+          <h3>Retrieval</h3>
+          <p>Fetches ERDDAP Argo data and stores snapshots into <code>data/</code>.</p>
+          <p>Modules: <code>src/agents/data_retrieval/agent.py</code>, <code>src/tools/fetcher.py</code></p>
+        </div>
+        <div>
+          <h3>Analysis</h3>
+          <p>Runs SQL + scientific processing and creates summaries/insights.</p>
+          <p>Modules: <code>src/agents/analysis/agent.py</code>, <code>src/tools/processor.py</code></p>
+        </div>
+        <div>
+          <h3>Validation</h3>
+          <p>Checks plausibility ranges, outlier rates, time-window consistency, and confidence.</p>
+          <p>Module: <code>src/agents/validation/agent.py</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>4. Supervisor Decision Workflow</h2>
+      <p>
+        The Supervisor is the conversation controller before expensive execution:
+      </p>
+      <ol>
+        <li>Parse and reason over user intent.</li>
+        <li>If critical parameters are missing, ask clarification questions.</li>
+        <li>If location is present, request map confirmation and area radius.</li>
+        <li>Build an approval plan (time/cost/data estimates).</li>
+        <li>On approval, trigger orchestrator execution.</li>
+      </ol>
+      <p>
+        Modules: <code>src/supervisor/agent.py</code>, <code>state.py</code>, <code>clarification.py</code>, <code>map_interface.py</code>, <code>planner.py</code>.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2>5. Data, State, and Memory Architecture</h2>
+      <div class="grid grid-2">
+        <div>
+          <h3>Operational Data</h3>
+          <p><code>data/argo_data.db</code> is the primary runtime SQLite store used by processor/API health/map coverage checks.</p>
+        </div>
+        <div>
+          <h3>Memory Layer</h3>
+          <p><code>src/memory</code> builds baseline/trend context and stores insights for future enrichment.</p>
+        </div>
+        <div>
+          <h3>State Contracts</h3>
+          <p><code>src/state/models.py</code> and <code>src/state/schemas.py</code> define intent/task/result/event contracts.</p>
+        </div>
+        <div>
+          <h3>Core Paths</h3>
+          <p><code>src/core/paths.py</code> centralizes directories and runtime paths.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>6. Secondary Workflows</h2>
+      <div class="grid grid-2">
+        <div>
+          <h3>Legacy Compatibility Path</h3>
+          <p>
+            <code>src/agent</code> still supports legacy execution mode and compatibility API behavior.
+          </p>
+        </div>
+        <div>
+          <h3>Campaign Automation</h3>
+          <p>
+            <code>src/campaigns</code> can run scheduled anomaly/weekly/float monitoring jobs.
+            This is disabled by default for cloud Streamlit via <code>POSEIDON_ENABLE_CAMPAIGNS=false</code>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel warn">
+      <h2>7. Production Notes</h2>
+      <ul>
+        <li>Use <code>requirements.txt</code> for production deployment; use <code>requirements-dev.txt</code> only for local development.</li>
+        <li>Set <code>OPENAI_API_KEY</code> in Streamlit secrets/environment.</li>
+        <li>Keep heavy semantic memory features off by default unless compute/memory budget is sufficient.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>8. Companion Documentation</h2>
+      <p>
+        Full file-by-file inventory and analysis is available at:
+        <code>docs/full_project_description.md</code>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

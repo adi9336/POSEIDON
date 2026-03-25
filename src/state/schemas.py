@@ -49,6 +49,7 @@ class OrchestratorRequest(BaseModel):
     latency_budget_ms: int = 120000
     cost_budget: float = 0.5
     metadata: Dict[str, Any] = Field(default_factory=dict)
+    intent_override: Optional[Dict[str, Any]] = None  # Supervisor-confirmed params
 
 
 class OrchestratorResponse(BaseModel):

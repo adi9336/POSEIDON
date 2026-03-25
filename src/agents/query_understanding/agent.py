@@ -3,6 +3,8 @@ from __future__ import annotations
 import time
 from typing import Any, Dict, List
 
+from langsmith import traceable
+
 from src.agents.base_agent import BaseAgent
 from src.state.schemas import AgentResult, AgentTask
 from src.tools.intent_extractor import extract_intent_with_llm
@@ -11,6 +13,7 @@ from src.tools.intent_extractor import extract_intent_with_llm
 class QueryUnderstandingAgent(BaseAgent):
     name = "query_understanding"
 
+    @traceable(name="query_understanding_plan")
     def plan(self, context: Dict[str, Any]) -> List[AgentTask]:
         return [
             AgentTask(
@@ -20,6 +23,7 @@ class QueryUnderstandingAgent(BaseAgent):
             )
         ]
 
+    @traceable(name="query_understanding_execute")
     def execute(self, task: AgentTask, context: Dict[str, Any]) -> AgentResult:
         started = time.perf_counter()
         query = task.payload.get("query", "")

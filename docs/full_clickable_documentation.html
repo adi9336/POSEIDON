@@ -1,0 +1,740 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POSEIDON Clickable Documentation</title>
+  <style>
+    :root { --bg:#f4f7fb; --card:#fff; --ink:#0f172a; --muted:#475569; --line:#d7e1ee; --brand:#0e7490; --brand2:#0369a1; }
+    body { margin:0; font-family: Segoe UI, Tahoma, sans-serif; color:var(--ink); background:linear-gradient(180deg,#eef4fb,#f8fafc); }
+    .wrap { max-width: 1320px; margin: 0 auto; padding: 18px; }
+    .hero { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:12px; }
+    h1,h2,h3 { margin: 6px 0; }
+    p,li { color:var(--muted); line-height:1.45; }
+    .grid { display:grid; gap:10px; } .g2 { grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+    .chip { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:3px 10px; margin:4px 6px 0 0; font-size:12px; color:#334155; background:#f8fbff; }
+    .toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+    input, select { border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:14px; }
+    .section { margin-top:12px; }
+    .cat { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px; margin-bottom:10px; }
+    details.file { border:1px solid #e7edf5; border-radius:10px; padding:8px; margin:8px 0; background:#fcfeff; }
+    details.file summary { cursor:pointer; font-weight:600; color:var(--brand2); }
+    .meta { font-size:12px; color:#64748b; margin-top:4px; }
+    code { background:#f1f5f9; border:1px solid #e2e8f0; border-radius:6px; padding:2px 6px; font-size:12px; }
+    .pathlink { text-decoration:none; color:#0f766e; font-weight:600; }
+    .toc a { text-decoration:none; color:#0369a1; margin-right:10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>POSEIDON Full Clickable Documentation</h1>
+      <p>Complete project overview plus file-by-file clickable documentation generated from current repository state.</p>
+      <span class='chip'>Total Files: 91</span><span class='chip'>Python Modules: 69</span><span class='chip'>Generated: 2026-03-25 14:37:40</span>
+      <div class="toolbar">
+        <input id="search" type="text" placeholder="Search files, symbols, or categories" style="min-width:320px" />
+        <select id="category"><option value="">All Categories</option></select>
+        <a class="pathlink" href="project_workflow.html">Open Workflow Page</a>
+        <a class="pathlink" href="full_project_description.md">Open Markdown Analysis</a>
+      </div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <h2>System Overview</h2>
+        <ul>
+          <li>UI: <code>streamlit_app.py</code> -> <code>app.py</code></li>
+          <li>API: <code>src/api/server.py</code></li>
+          <li>Supervisor: clarification/map/approval orchestration</li>
+          <li>Core pipeline: understanding -> retrieval -> analysis -> validation</li>
+          <li>Memory enrichment and campaign automation are optional by env flags</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Production Runtime</h2>
+        <ul>
+          <li>Deploy entrypoint: <code>streamlit_app.py</code></li>
+          <li>Config: <code>.streamlit/config.toml</code>, <code>runtime.txt</code></li>
+          <li>Prod deps: <code>requirements.txt</code></li>
+          <li>Dev deps: <code>requirements-dev.txt</code></li>
+          <li>Runtime paths centralized in <code>src/core/paths.py</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section toc card">
+      <h2>Category Quick Links</h2>
+      <a href='#cat_Agents'>Agents (12)</a>
+      <a href='#cat_API'>API (1)</a>
+      <a href='#cat_Campaigns'>Campaigns (6)</a>
+      <a href='#cat_Configuration'>Configuration (5)</a>
+      <a href='#cat_Core'>Core (2)</a>
+      <a href='#cat_Documentation'>Documentation (5)</a>
+      <a href='#cat_Legacy_Agent'>Legacy Agent (4)</a>
+      <a href='#cat_Memory'>Memory (7)</a>
+      <a href='#cat_Notebooks'>Notebooks (2)</a>
+      <a href='#cat_Orchestration'>Orchestration (4)</a>
+      <a href='#cat_Root'>Root (11)</a>
+      <a href='#cat_Scripts'>Scripts (2)</a>
+      <a href='#cat_Skills'>Skills (3)</a>
+      <a href='#cat_State_Models'>State Models (3)</a>
+      <a href='#cat_Supervisor'>Supervisor (6)</a>
+      <a href='#cat_Tests'>Tests (7)</a>
+      <a href='#cat_Tooling'>Tooling (11)</a>
+    </div>
+
+    <div id="doc">
+      <div class='cat doc-item' data-category='Agents' id='cat_Agents'>
+        <h2>Agents</h2>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\__init__.py agents   from src.agents.analysis.agent import analysisagent || from src.agents.base_agent import baseagent || from src.agents.data_retrieval.agent import dataretrievalagent'>
+          <summary><a class='pathlink' href='../src/agents/__init__.py' target='_blank'>src\agents\__init__.py</a></summary>
+          <div class='meta'>Lines: 14 | Size: 0.5 KB</div>
+          <p><strong>Imports (sample):</strong> <code>from src.agents.analysis.agent import AnalysisAgent || from src.agents.base_agent import BaseAgent || from src.agents.data_retrieval.agent import DataRetrievalAgent || from src.agents.query_understanding.agent import QueryUnderstandingAgent || from src.agents.validation.agent import ValidationAgent || from src.agents.visualization.agent import VisualizationAgent</code></p>
+          <p><strong>Header snapshot:</strong> <code>from src.agents.analysis.agent import AnalysisAgent || from src.agents.base_agent import BaseAgent || from src.agents.data_retrieval.agent import DataRetrievalAgent</code></p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\analysis\__init__.py agents   '>
+          <summary><a class='pathlink' href='../src/agents/analysis/__init__.py' target='_blank'>src\agents\analysis\__init__.py</a></summary>
+          <div class='meta'>Lines: 0 | Size: 0 KB</div>
+          <p>Binary/notebook/config file with no parsed symbols.</p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\analysis\agent.py agents analysisagent  from __future__ import annotations || from concurrent.futures import threadpoolexecutor || import time'>
+          <summary><a class='pathlink' href='../src/agents/analysis/agent.py' target='_blank'>src\agents\analysis\agent.py</a></summary>
+          <div class='meta'>Lines: 149 | Size: 6.7 KB</div>
+          <p><strong>Classes:</strong> <code>AnalysisAgent</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from concurrent.futures import ThreadPoolExecutor || import time || from typing import Any, Dict, List || from langsmith import traceable || from src.agents.base_agent import BaseAgent</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from concurrent.futures import ThreadPoolExecutor || import time</code></p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\base_agent.py agents baseagent  from __future__ import annotations || from abc import abc, abstractmethod || from typing import any, dict, list, optional'>
+          <summary><a class='pathlink' href='../src/agents/base_agent.py' target='_blank'>src\agents\base_agent.py</a></summary>
+          <div class='meta'>Lines: 17 | Size: 0.7 KB</div>
+          <p><strong>Classes:</strong> <code>BaseAgent</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from abc import ABC, abstractmethod || from typing import Any, Dict, List, Optional || from src.state.schemas import AgentResult, AgentTask, QualityReport</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from abc import ABC, abstractmethod || from typing import Any, Dict, List, Optional</code></p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\data_retrieval\__init__.py agents   '>
+          <summary><a class='pathlink' href='../src/agents/data_retrieval/__init__.py' target='_blank'>src\agents\data_retrieval\__init__.py</a></summary>
+          <div class='meta'>Lines: 0 | Size: 0 KB</div>
+          <p>Binary/notebook/config file with no parsed symbols.</p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\data_retrieval\agent.py agents dataretrievalagent  from __future__ import annotations || import time || from typing import any, dict, list'>
+          <summary><a class='pathlink' href='../src/agents/data_retrieval/agent.py' target='_blank'>src\agents\data_retrieval\agent.py</a></summary>
+          <div class='meta'>Lines: 64 | Size: 2.59 KB</div>
+          <p><strong>Classes:</strong> <code>DataRetrievalAgent</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import time || from typing import Any, Dict, List || from langsmith import traceable || from src.agents.base_agent import BaseAgent || from src.state.models import FloatChatState, ScientificIntent</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || import time || from typing import Any, Dict, List</code></p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\query_understanding\__init__.py agents   '>
+          <summary><a class='pathlink' href='../src/agents/query_understanding/__init__.py' target='_blank'>src\agents\query_understanding\__init__.py</a></summary>
+          <div class='meta'>Lines: 0 | Size: 0 KB</div>
+          <p>Binary/notebook/config file with no parsed symbols.</p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\query_understanding\agent.py agents queryunderstandingagent  from __future__ import annotations || import time || from typing import any, dict, list'>
+          <summary><a class='pathlink' href='../src/agents/query_understanding/agent.py' target='_blank'>src\agents\query_understanding\agent.py</a></summary>
+          <div class='meta'>Lines: 66 | Size: 2.62 KB</div>
+          <p><strong>Classes:</strong> <code>QueryUnderstandingAgent</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import time || from typing import Any, Dict, List || from langsmith import traceable || from src.agents.base_agent import BaseAgent || from src.state.schemas import AgentResult, AgentTask</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || import time || from typing import Any, Dict, List</code></p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\validation\__init__.py agents   '>
+          <summary><a class='pathlink' href='../src/agents/validation/__init__.py' target='_blank'>src\agents\validation\__init__.py</a></summary>
+          <div class='meta'>Lines: 0 | Size: 0 KB</div>
+          <p>Binary/notebook/config file with no parsed symbols.</p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\validation\agent.py agents validationagent  from __future__ import annotations || from datetime import datetime, timezone || from statistics import median'>
+          <summary><a class='pathlink' href='../src/agents/validation/agent.py' target='_blank'>src\agents\validation\agent.py</a></summary>
+          <div class='meta'>Lines: 180 | Size: 8.38 KB</div>
+          <p><strong>Classes:</strong> <code>ValidationAgent</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from datetime import datetime, timezone || from statistics import median || from typing import Any, Dict, List || from langsmith import traceable || from src.agents.base_agent import BaseAgent</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from datetime import datetime, timezone || from statistics import median</code></p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\visualization\__init__.py agents   '>
+          <summary><a class='pathlink' href='../src/agents/visualization/__init__.py' target='_blank'>src\agents\visualization\__init__.py</a></summary>
+          <div class='meta'>Lines: 0 | Size: 0 KB</div>
+          <p>Binary/notebook/config file with no parsed symbols.</p>
+        </details>
+        <details class='file doc-item' data-category='Agents' data-search='src\agents\visualization\agent.py agents visualizationagent  from __future__ import annotations || from typing import any, dict, list || from src.agents.base_agent import baseagent'>
+          <summary><a class='pathlink' href='../src/agents/visualization/agent.py' target='_blank'>src\agents\visualization\agent.py</a></summary>
+          <div class='meta'>Lines: 16 | Size: 0.68 KB</div>
+          <p><strong>Classes:</strong> <code>VisualizationAgent</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from typing import Any, Dict, List || from src.agents.base_agent import BaseAgent || from src.state.schemas import AgentResult, AgentTask</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from typing import Any, Dict, List || from src.agents.base_agent import BaseAgent</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='API' id='cat_API'>
+        <h2>API</h2>
+        <details class='file doc-item' data-category='API' data-search='src\api\server.py api queryrequest, queryresponse _intent_to_dict, _run_legacy_query from __future__ import annotations || import asyncio || import logging'>
+          <summary><a class='pathlink' href='../src/api/server.py' target='_blank'>src\api\server.py</a></summary>
+          <div class='meta'>Lines: 196 | Size: 6.99 KB</div>
+          <p><strong>Classes:</strong> <code>QueryRequest, QueryResponse</code></p>
+          <p><strong>Functions:</strong> <code>_intent_to_dict, _run_legacy_query</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import asyncio || import logging || import sqlite3 || import sys || from pathlib import Path</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || import asyncio || import logging</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Campaigns' id='cat_Campaigns'>
+        <h2>Campaigns</h2>
+        <details class='file doc-item' data-category='Campaigns' data-search='src\campaigns\__init__.py campaigns   &quot;&quot;&quot;campaigns package &#226;€” automated oceanographic monitoring.&quot;&quot;&quot;'>
+          <summary><a class='pathlink' href='../src/campaigns/__init__.py' target='_blank'>src\campaigns\__init__.py</a></summary>
+          <div class='meta'>Lines: 1 | Size: 0.06 KB</div>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot;Campaigns package &#226;€” automated oceanographic monitoring.&quot;&quot;&quot;</code></p>
+        </details>
+        <details class='file doc-item' data-category='Campaigns' data-search='src\campaigns\anomaly_watch.py campaigns anomalywatchcampaign  &quot;&quot;&quot;daily anomaly watch &#226;€” scans key regions, alerts on high anomaly rate.&quot;&quot;&quot; || from __future__ import annotations || from datetime import datetime'>
+          <summary><a class='pathlink' href='../src/campaigns/anomaly_watch.py' target='_blank'>src\campaigns\anomaly_watch.py</a></summary>
+          <div class='meta'>Lines: 47 | Size: 2.4 KB</div>
+          <p><strong>Classes:</strong> <code>AnomalyWatchCampaign</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from datetime import datetime || from typing import Any, Dict, List || from src.campaigns.base_campaign import BaseCampaign</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot;Daily anomaly watch &#226;€” scans key regions, alerts on high anomaly rate.&quot;&quot;&quot; || from __future__ import annotations || from datetime import datetime</code></p>
+        </details>
+        <details class='file doc-item' data-category='Campaigns' data-search='src\campaigns\base_campaign.py campaigns basecampaign  &quot;&quot;&quot; || basecampaign &#226;€” shared behaviour for all automated campaigns. || all campaigns inherit from this. handles logging, error recovery,'>
+          <summary><a class='pathlink' href='../src/campaigns/base_campaign.py' target='_blank'>src\campaigns\base_campaign.py</a></summary>
+          <div class='meta'>Lines: 60 | Size: 2.53 KB</div>
+          <p><strong>Classes:</strong> <code>BaseCampaign</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import json || import logging || from abc import ABC, abstractmethod || from datetime import datetime || from pathlib import Path</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || BaseCampaign &#226;€” shared behaviour for all automated campaigns. || All campaigns inherit from this. Handles logging, error recovery,</code></p>
+        </details>
+        <details class='file doc-item' data-category='Campaigns' data-search='src\campaigns\float_watcher.py campaigns floatwatchercampaign _point_to_region &quot;&quot;&quot; || event-driven float watcher &#226;€” detects new argo float data hourly. || triggers deep analysis only when genuinely new data arrives.'>
+          <summary><a class='pathlink' href='../src/campaigns/float_watcher.py' target='_blank'>src\campaigns\float_watcher.py</a></summary>
+          <div class='meta'>Lines: 68 | Size: 3.13 KB</div>
+          <p><strong>Classes:</strong> <code>FloatWatcherCampaign</code></p>
+          <p><strong>Functions:</strong> <code>_point_to_region</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import hashlib || import requests || import logging || from datetime import datetime || from typing import Any, Dict, List, Optional</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Event-driven float watcher &#226;€” detects new ARGO float data hourly. || Triggers deep analysis only when genuinely new data arrives.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Campaigns' data-search='src\campaigns\manager.py campaigns campaignmanager  &quot;&quot;&quot; || campaignmanager &#226;€” central scheduler. || one shared orchestrator instance for both chatbot and all campaigns.'>
+          <summary><a class='pathlink' href='../src/campaigns/manager.py' target='_blank'>src\campaigns\manager.py</a></summary>
+          <div class='meta'>Lines: 59 | Size: 2.73 KB</div>
+          <p><strong>Classes:</strong> <code>CampaignManager</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import logging || import yaml || from pathlib import Path || from apscheduler.schedulers.background import BackgroundScheduler || from src.core.paths import CAMPAIGNS_CONFIG_PATH</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || CampaignManager &#226;€” central scheduler. || One shared orchestrator instance for both chatbot and all campaigns.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Campaigns' data-search='src\campaigns\weekly_report.py campaigns weeklyreportcampaign  &quot;&quot;&quot;weekly regional ocean health report across 5 ocean basins.&quot;&quot;&quot; || from __future__ import annotations || from datetime import datetime'>
+          <summary><a class='pathlink' href='../src/campaigns/weekly_report.py' target='_blank'>src\campaigns\weekly_report.py</a></summary>
+          <div class='meta'>Lines: 35 | Size: 1.63 KB</div>
+          <p><strong>Classes:</strong> <code>WeeklyReportCampaign</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from datetime import datetime || from typing import Any, Dict || from src.campaigns.base_campaign import BaseCampaign</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot;Weekly regional ocean health report across 5 ocean basins.&quot;&quot;&quot; || from __future__ import annotations || from datetime import datetime</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Configuration' id='cat_Configuration'>
+        <h2>Configuration</h2>
+        <details class='file doc-item' data-category='Configuration' data-search='config\agents.yaml configuration   agents: ||   query_understanding: ||     enabled: true'>
+          <summary><a class='pathlink' href='../config/agents.yaml' target='_blank'>config\agents.yaml</a></summary>
+          <div class='meta'>Lines: 17 | Size: 0.29 KB</div>
+          <p><strong>Header snapshot:</strong> <code>agents: ||   query_understanding: ||     enabled: true</code></p>
+        </details>
+        <details class='file doc-item' data-category='Configuration' data-search='config\campaigns.yaml configuration   campaigns: ||   anomaly_watch: ||     enabled: true'>
+          <summary><a class='pathlink' href='../config/campaigns.yaml' target='_blank'>config\campaigns.yaml</a></summary>
+          <div class='meta'>Lines: 24 | Size: 0.44 KB</div>
+          <p><strong>Header snapshot:</strong> <code>campaigns: ||   anomaly_watch: ||     enabled: true</code></p>
+        </details>
+        <details class='file doc-item' data-category='Configuration' data-search='config\llms.yaml configuration   llms: ||   orchestrator: ||     provider: openai'>
+          <summary><a class='pathlink' href='../config/llms.yaml' target='_blank'>config\llms.yaml</a></summary>
+          <div class='meta'>Lines: 16 | Size: 0.33 KB</div>
+          <p><strong>Header snapshot:</strong> <code>llms: ||   orchestrator: ||     provider: openai</code></p>
+        </details>
+        <details class='file doc-item' data-category='Configuration' data-search='config\policies.yaml configuration   policies: ||   default_provider: openai ||   max_task_retries: 2'>
+          <summary><a class='pathlink' href='../config/policies.yaml' target='_blank'>config\policies.yaml</a></summary>
+          <div class='meta'>Lines: 14 | Size: 0.36 KB</div>
+          <p><strong>Header snapshot:</strong> <code>policies: ||   default_provider: openai ||   max_task_retries: 2</code></p>
+        </details>
+        <details class='file doc-item' data-category='Configuration' data-search='config\tools.yaml configuration   tools: ||   sql_generator: ||     enabled: true'>
+          <summary><a class='pathlink' href='../config/tools.yaml' target='_blank'>config\tools.yaml</a></summary>
+          <div class='meta'>Lines: 13 | Size: 0.2 KB</div>
+          <p><strong>Header snapshot:</strong> <code>tools: ||   sql_generator: ||     enabled: true</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Core' id='cat_Core'>
+        <h2>Core</h2>
+        <details class='file doc-item' data-category='Core' data-search='src\core\__init__.py core   &quot;&quot;&quot;core utilities shared across the poseidon codebase.&quot;&quot;&quot;'>
+          <summary><a class='pathlink' href='../src/core/__init__.py' target='_blank'>src\core\__init__.py</a></summary>
+          <div class='meta'>Lines: 1 | Size: 0.06 KB</div>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot;Core utilities shared across the POSEIDON codebase.&quot;&quot;&quot;</code></p>
+        </details>
+        <details class='file doc-item' data-category='Core' data-search='src\core\paths.py core  ensure_runtime_dirs from __future__ import annotations || from pathlib import path || project_root = path(__file__).resolve().parents[2]'>
+          <summary><a class='pathlink' href='../src/core/paths.py' target='_blank'>src\core\paths.py</a></summary>
+          <div class='meta'>Lines: 22 | Size: 0.94 KB</div>
+          <p><strong>Functions:</strong> <code>ensure_runtime_dirs</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from pathlib import Path</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from pathlib import Path || PROJECT_ROOT = Path(__file__).resolve().parents[2]</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Documentation' id='cat_Documentation'>
+        <h2>Documentation</h2>
+        <details class='file doc-item' data-category='Documentation' data-search='docs\architecture.md documentation   # poseidon multi-agent architecture || ## runtime modes || - `legacy`: use existing `run_argo_workflow` pipeline.'>
+          <summary><a class='pathlink' href='../docs/architecture.md' target='_blank'>docs\architecture.md</a></summary>
+          <div class='meta'>Lines: 18 | Size: 0.59 KB</div>
+          <p><strong>Header snapshot:</strong> <code># POSEIDON Multi-Agent Architecture || ## Runtime modes || - `legacy`: Use existing `run_argo_workflow` pipeline.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Documentation' data-search='docs\full_project_description.md documentation   # full project description and file-by-file analysis || ## executive summary || poseidon is a multi-agent oceanographic analysis platform that combines a supervisor conversation layer, an orchestrator graph, task-specific agents, scientific tooling, and optional autonomous campaigns. it supports streamlit ui usage and fastapi api usage.'>
+          <summary><a class='pathlink' href='../docs/full_project_description.md' target='_blank'>docs\full_project_description.md</a></summary>
+          <div class='meta'>Lines: 317 | Size: 15.66 KB</div>
+          <p><strong>Header snapshot:</strong> <code># Full Project Description and File-by-File Analysis || ## Executive Summary || POSEIDON is a multi-agent oceanographic analysis platform that combines a Supervisor conversation layer, an orchestrator graph, task-specific agents, scientific tooling, and optional autonomous campaigns. It supports Streamlit UI usage and FastAPI API usage.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Documentation' data-search='docs\implementation_plan.md documentation   # poseidon supervisor agent architecture redesign || a production-grade supervisor agent that sits between the user and the existing 5-agent orchestrator, providing intelligent clarification, geographic confirmation, workflow approval, and progress communication. || ## user review required'>
+          <summary><a class='pathlink' href='../docs/implementation_plan.md' target='_blank'>docs\implementation_plan.md</a></summary>
+          <div class='meta'>Lines: 121 | Size: 8.63 KB</div>
+          <p><strong>Header snapshot:</strong> <code># POSEIDON Supervisor Agent Architecture Redesign || A production-grade Supervisor Agent that sits between the user and the existing 5-agent orchestrator, providing intelligent clarification, geographic confirmation, workflow approval, and progress communication. || ## User Review Required</code></p>
+        </details>
+        <details class='file doc-item' data-category='Documentation' data-search='docs\project_overview.md documentation   # poseidon project overview || ## what this project is || poseidon is an oceanographic analysis application built around argo float data. it accepts natural-language questions, resolves them into a scientific intent, fetches matching observations from erddap, runs analysis and validation, and presents the result through:'>
+          <summary><a class='pathlink' href='../docs/project_overview.md' target='_blank'>docs\project_overview.md</a></summary>
+          <div class='meta'>Lines: 203 | Size: 9.78 KB</div>
+          <p><strong>Header snapshot:</strong> <code># POSEIDON Project Overview || ## What This Project Is || POSEIDON is an oceanographic analysis application built around Argo float data. It accepts natural-language questions, resolves them into a scientific intent, fetches matching observations from ERDDAP, runs analysis and validation, and presents the result through:</code></p>
+        </details>
+        <details class='file doc-item' data-category='Documentation' data-search='docs\project_workflow.html documentation   &lt;!doctype html&gt; || &lt;html lang=&quot;en&quot;&gt; || &lt;head&gt;'>
+          <summary><a class='pathlink' href='../docs/project_workflow.html' target='_blank'>docs\project_workflow.html</a></summary>
+          <div class='meta'>Lines: 247 | Size: 7.82 KB</div>
+          <p><strong>Header snapshot:</strong> <code>&lt;!DOCTYPE html&gt; || &lt;html lang=&quot;en&quot;&gt; || &lt;head&gt;</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Legacy Agent' id='cat_Legacy_Agent'>
+        <h2>Legacy Agent</h2>
+        <details class='file doc-item' data-category='Legacy Agent' data-search='src\agent\__init__.py legacy agent   # this file makes the agent directory a python package'>
+          <summary><a class='pathlink' href='../src/agent/__init__.py' target='_blank'>src\agent\__init__.py</a></summary>
+          <div class='meta'>Lines: 1 | Size: 0.05 KB</div>
+          <p><strong>Header snapshot:</strong> <code># This file makes the agent directory a Python package</code></p>
+        </details>
+        <details class='file doc-item' data-category='Legacy Agent' data-search='src\agent\graph.py legacy agent argoworkflow create_argo_workflow, run_argo_workflow &quot;&quot;&quot; || graph module for defining and running the argo workflow. || &quot;&quot;&quot;'>
+          <summary><a class='pathlink' href='../src/agent/graph.py' target='_blank'>src\agent\graph.py</a></summary>
+          <div class='meta'>Lines: 61 | Size: 2.83 KB</div>
+          <p><strong>Classes:</strong> <code>ArgoWorkflow</code></p>
+          <p><strong>Functions:</strong> <code>create_argo_workflow, run_argo_workflow</code></p>
+          <p><strong>Imports (sample):</strong> <code>from typing import Dict, Any, Optional || from langgraph.graph import StateGraph, END || from langchain_core.messages import HumanMessage || from src.state.models import FloatChatState</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Graph module for defining and running the Argo workflow. || &quot;&quot;&quot;</code></p>
+        </details>
+        <details class='file doc-item' data-category='Legacy Agent' data-search='src\agent\react_agent.py legacy agent reactagent main # src/agent/react_agent.py || import os || from typing import list, dict, any, optional'>
+          <summary><a class='pathlink' href='../src/agent/react_agent.py' target='_blank'>src\agent\react_agent.py</a></summary>
+          <div class='meta'>Lines: 185 | Size: 7.75 KB</div>
+          <p><strong>Classes:</strong> <code>ReactAgent</code></p>
+          <p><strong>Functions:</strong> <code>main</code></p>
+          <p><strong>Imports (sample):</strong> <code>import os || from typing import List, Dict, Any, Optional || from langchain.agents import Tool, AgentExecutor, create_react_agent, tool || from langchain.prompts import PromptTemplate || from langchain_core.messages import AIMessage, HumanMessage || from langchain_openai import ChatOpenAI</code></p>
+          <p><strong>Header snapshot:</strong> <code># src/agent/react_agent.py || import os || from typing import List, Dict, Any, Optional</code></p>
+        </details>
+        <details class='file doc-item' data-category='Legacy Agent' data-search='src\agent\retrieving_agent.py legacy agent  extract_intent, fetch_data, create_argo_workflow, run_argo_workflow import os || import sys || from typing import dict, list, optional'>
+          <summary><a class='pathlink' href='../src/agent/Retrieving_Agent.py' target='_blank'>src\agent\Retrieving_Agent.py</a></summary>
+          <div class='meta'>Lines: 199 | Size: 7.84 KB</div>
+          <p><strong>Functions:</strong> <code>extract_intent, fetch_data, create_argo_workflow, run_argo_workflow</code></p>
+          <p><strong>Imports (sample):</strong> <code>import os || import sys || from typing import Dict, List, Optional || from langgraph.graph import StateGraph, END || from src.state.models import FloatChatState, ScientificIntent || from src.tools.intent_extractor import extract_intent_with_llm</code></p>
+          <p><strong>Header snapshot:</strong> <code>import os || import sys || from typing import Dict, List, Optional</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Memory' id='cat_Memory'>
+        <h2>Memory</h2>
+        <details class='file doc-item' data-category='Memory' data-search='src\memory\__init__.py memory   from src.memory.long_term import longtermmemory || from src.memory.short_term import shorttermmemory || from src.memory.vector_store import chromaadapter, pineconeadapter, vectorstoreadapter'>
+          <summary><a class='pathlink' href='../src/memory/__init__.py' target='_blank'>src\memory\__init__.py</a></summary>
+          <div class='meta'>Lines: 16 | Size: 0.53 KB</div>
+          <p><strong>Imports (sample):</strong> <code>from src.memory.long_term import LongTermMemory || from src.memory.short_term import ShortTermMemory || from src.memory.vector_store import ChromaAdapter, PineconeAdapter, VectorStoreAdapter || from src.memory.insight_store import InsightStore || from src.memory.insight_retriever import InsightRetriever || from src.memory.context_builder import ContextBuilder</code></p>
+          <p><strong>Header snapshot:</strong> <code>from src.memory.long_term import LongTermMemory || from src.memory.short_term import ShortTermMemory || from src.memory.vector_store import ChromaAdapter, PineconeAdapter, VectorStoreAdapter</code></p>
+        </details>
+        <details class='file doc-item' data-category='Memory' data-search='src\memory\context_builder.py memory contextbuilder  &quot;&quot;&quot; || contextbuilder &#226;€” assembles enriched context dict from insightretriever. || injected into orchestrator state before any agent runs.'>
+          <summary><a class='pathlink' href='../src/memory/context_builder.py' target='_blank'>src\memory\context_builder.py</a></summary>
+          <div class='meta'>Lines: 45 | Size: 1.93 KB</div>
+          <p><strong>Classes:</strong> <code>ContextBuilder</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import logging || from typing import Any, Dict || from src.memory.insight_retriever import InsightRetriever</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || ContextBuilder &#226;€” assembles enriched context dict from InsightRetriever. || Injected into orchestrator state before any agent runs.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Memory' data-search='src\memory\insight_retriever.py memory insightretriever  &quot;&quot;&quot; || insightretriever &#226;€” read side of memory. || called before every orchestrator run to enrich context with history.'>
+          <summary><a class='pathlink' href='../src/memory/insight_retriever.py' target='_blank'>src\memory\insight_retriever.py</a></summary>
+          <div class='meta'>Lines: 140 | Size: 6.22 KB</div>
+          <p><strong>Classes:</strong> <code>InsightRetriever</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import os || import sqlite3 || import logging || from datetime import datetime, timedelta || from typing import Any, Dict, List, Optional</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || InsightRetriever &#226;€” read side of memory. || Called BEFORE every orchestrator run to enrich context with history.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Memory' data-search='src\memory\insight_store.py memory insightstore  &quot;&quot;&quot; || insightstore &#226;€” dual write: chromadb (semantic) + sqlite (structured). || called after every orchestrator execution, chatbot or campaign.'>
+          <summary><a class='pathlink' href='../src/memory/insight_store.py' target='_blank'>src\memory\insight_store.py</a></summary>
+          <div class='meta'>Lines: 124 | Size: 5.67 KB</div>
+          <p><strong>Classes:</strong> <code>InsightStore</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import os || import sqlite3 || import json || import logging || from datetime import datetime</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || InsightStore &#226;€” dual write: ChromaDB (semantic) + SQLite (structured). || Called after EVERY orchestrator execution, chatbot or campaign.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Memory' data-search='src\memory\long_term.py memory longtermmemory  from __future__ import annotations || from typing import any, dict, list || class longtermmemory:'>
+          <summary><a class='pathlink' href='../src/memory/long_term.py' target='_blank'>src\memory\long_term.py</a></summary>
+          <div class='meta'>Lines: 17 | Size: 0.62 KB</div>
+          <p><strong>Classes:</strong> <code>LongTermMemory</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from typing import Any, Dict, List</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from typing import Any, Dict, List || class LongTermMemory:</code></p>
+        </details>
+        <details class='file doc-item' data-category='Memory' data-search='src\memory\short_term.py memory shorttermmemory  from __future__ import annotations || from collections import deque || from typing import any, deque, dict'>
+          <summary><a class='pathlink' href='../src/memory/short_term.py' target='_blank'>src\memory\short_term.py</a></summary>
+          <div class='meta'>Lines: 13 | Size: 0.63 KB</div>
+          <p><strong>Classes:</strong> <code>ShortTermMemory</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from collections import deque || from typing import Any, Deque, Dict</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from collections import deque || from typing import Any, Deque, Dict</code></p>
+        </details>
+        <details class='file doc-item' data-category='Memory' data-search='src\memory\vector_store.py memory vectorstoreadapter, chromaadapter, pineconeadapter  from __future__ import annotations || from abc import abc, abstractmethod || from typing import any, dict, list'>
+          <summary><a class='pathlink' href='../src/memory/vector_store.py' target='_blank'>src\memory\vector_store.py</a></summary>
+          <div class='meta'>Lines: 30 | Size: 1.34 KB</div>
+          <p><strong>Classes:</strong> <code>VectorStoreAdapter, ChromaAdapter, PineconeAdapter</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from abc import ABC, abstractmethod || from typing import Any, Dict, List</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from abc import ABC, abstractmethod || from typing import Any, Dict, List</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Notebooks' id='cat_Notebooks'>
+        <h2>Notebooks</h2>
+        <details class='file doc-item' data-category='Notebooks' data-search='notebooks\test.ipynb notebooks   { ||  &quot;cells&quot;: [ ||   {'>
+          <summary><a class='pathlink' href='../notebooks/test.ipynb' target='_blank'>notebooks\test.ipynb</a></summary>
+          <div class='meta'>Lines: 481 | Size: 233.61 KB</div>
+          <p><strong>Header snapshot:</strong> <code>{ ||  &quot;cells&quot;: [ ||   {</code></p>
+        </details>
+        <details class='file doc-item' data-category='Notebooks' data-search='notebooks\visualisati.ipynb notebooks   { ||  &quot;cells&quot;: [ ||   {'>
+          <summary><a class='pathlink' href='../notebooks/visualisati.ipynb' target='_blank'>notebooks\visualisati.ipynb</a></summary>
+          <div class='meta'>Lines: 309 | Size: 59.46 KB</div>
+          <p><strong>Header snapshot:</strong> <code>{ ||  &quot;cells&quot;: [ ||   {</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Orchestration' id='cat_Orchestration'>
+        <h2>Orchestration</h2>
+        <details class='file doc-item' data-category='Orchestration' data-search='src\orchestrator\__init__.py orchestration   from src.orchestrator.main import poseidonorchestrator || from src.orchestrator.router import policyrouter || from src.orchestrator.state_manager import statemanager'>
+          <summary><a class='pathlink' href='../src/orchestrator/__init__.py' target='_blank'>src\orchestrator\__init__.py</a></summary>
+          <div class='meta'>Lines: 4 | Size: 0.22 KB</div>
+          <p><strong>Imports (sample):</strong> <code>from src.orchestrator.main import PoseidonOrchestrator || from src.orchestrator.router import PolicyRouter || from src.orchestrator.state_manager import StateManager</code></p>
+          <p><strong>Header snapshot:</strong> <code>from src.orchestrator.main import PoseidonOrchestrator || from src.orchestrator.router import PolicyRouter || from src.orchestrator.state_manager import StateManager</code></p>
+        </details>
+        <details class='file doc-item' data-category='Orchestration' data-search='src\orchestrator\main.py orchestration workflowstate, poseidonorchestrator  from __future__ import annotations || import logging || import os'>
+          <summary><a class='pathlink' href='../src/orchestrator/main.py' target='_blank'>src\orchestrator\main.py</a></summary>
+          <div class='meta'>Lines: 386 | Size: 16.49 KB</div>
+          <p><strong>Classes:</strong> <code>WorkflowState, PoseidonOrchestrator</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import logging || import os || import time || from collections import defaultdict || from typing import Any, Callable, Dict, List, TypedDict</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || import logging || import os</code></p>
+        </details>
+        <details class='file doc-item' data-category='Orchestration' data-search='src\orchestrator\router.py orchestration routingdecision, policyrouter  from __future__ import annotations || import os || from dataclasses import dataclass'>
+          <summary><a class='pathlink' href='../src/orchestrator/router.py' target='_blank'>src\orchestrator\router.py</a></summary>
+          <div class='meta'>Lines: 39 | Size: 1.72 KB</div>
+          <p><strong>Classes:</strong> <code>RoutingDecision, PolicyRouter</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import os || from dataclasses import dataclass || from typing import Any, Dict</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || import os || from dataclasses import dataclass</code></p>
+        </details>
+        <details class='file doc-item' data-category='Orchestration' data-search='src\orchestrator\state_manager.py orchestration statemanager  from __future__ import annotations || import json || from typing import any, dict, optional'>
+          <summary><a class='pathlink' href='../src/orchestrator/state_manager.py' target='_blank'>src\orchestrator\state_manager.py</a></summary>
+          <div class='meta'>Lines: 25 | Size: 1.02 KB</div>
+          <p><strong>Classes:</strong> <code>StateManager</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import json || from typing import Any, Dict, Optional</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || import json || from typing import Any, Dict, Optional</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Root' id='cat_Root'>
+        <h2>Root</h2>
+        <details class='file doc-item' data-category='Root' data-search='app.py root  initialize, render_diagnostics, render_visualizations, render_clarification_dialog, render_map_confirmation, render_approval_card, _handle_supervisor_response, _progress_from_events, execute_with_live_progress, main, _run_execution import os || import sys || import threading'>
+          <summary><a class='pathlink' href='../app.py' target='_blank'>app.py</a></summary>
+          <div class='meta'>Lines: 600 | Size: 29.22 KB</div>
+          <p><strong>Functions:</strong> <code>initialize, render_diagnostics, render_visualizations, render_clarification_dialog, render_map_confirmation, render_approval_card, _handle_supervisor_response, _progress_from_events, execute_with_live_progress, main, _run_execution</code></p>
+          <p><strong>Imports (sample):</strong> <code>import os || import sys || import threading || import time || from typing import Any, Dict || import folium</code></p>
+          <p><strong>Header snapshot:</strong> <code>import os || import sys || import threading</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='pyproject.toml root   [build-system] || requires = [&quot;setuptools&gt;=42&quot;, &quot;wheel&quot;] || build-backend = &quot;setuptools.build_meta&quot;'>
+          <summary><a class='pathlink' href='../pyproject.toml' target='_blank'>pyproject.toml</a></summary>
+          <div class='meta'>Lines: 37 | Size: 0.91 KB</div>
+          <p><strong>Header snapshot:</strong> <code>[build-system] || requires = [&quot;setuptools&gt;=42&quot;, &quot;wheel&quot;] || build-backend = &quot;setuptools.build_meta&quot;</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='readme.md root   # poseidon: multi-agent oceanographic analysis || poseidon is a multi-agent oceanographic analysis system for argo float data. || it supports natural language querying, retrieval, analysis, validation, and interactive visualization.'>
+          <summary><a class='pathlink' href='../README.md' target='_blank'>README.md</a></summary>
+          <div class='meta'>Lines: 105 | Size: 3.46 KB</div>
+          <p><strong>Header snapshot:</strong> <code># POSEIDON: Multi-Agent Oceanographic Analysis || POSEIDON is a multi-agent oceanographic analysis system for Argo float data. || It supports natural language querying, retrieval, analysis, validation, and interactive visualization.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='requirements.txt root   langgraph==0.1.19 || langchain-core==0.2.43 || langchain-community==0.2.4'>
+          <summary><a class='pathlink' href='../requirements.txt' target='_blank'>requirements.txt</a></summary>
+          <div class='meta'>Lines: 24 | Size: 0.42 KB</div>
+          <p><strong>Header snapshot:</strong> <code>langgraph==0.1.19 || langchain-core==0.2.43 || langchain-community==0.2.4</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='requirements-dev.txt root   -r requirements.txt || pytest&gt;=8.4.2 || black==26.1a1'>
+          <summary><a class='pathlink' href='../requirements-dev.txt' target='_blank'>requirements-dev.txt</a></summary>
+          <div class='meta'>Lines: 14 | Size: 0.24 KB</div>
+          <p><strong>Header snapshot:</strong> <code>-r requirements.txt || pytest&gt;=8.4.2 || black==26.1a1</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='run_campaigns.py root   &quot;&quot;&quot; || standalone campaign runner. || run alongside app.py or independently for autonomous monitoring.'>
+          <summary><a class='pathlink' href='../run_campaigns.py' target='_blank'>run_campaigns.py</a></summary>
+          <div class='meta'>Lines: 25 | Size: 0.7 KB</div>
+          <p><strong>Imports (sample):</strong> <code>import logging || import time || from src.campaigns.manager import CampaignManager</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Standalone campaign runner. || Run alongside app.py or independently for autonomous monitoring.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='runtime.txt root   python-3.11'>
+          <summary><a class='pathlink' href='../runtime.txt' target='_blank'>runtime.txt</a></summary>
+          <div class='meta'>Lines: 1 | Size: 0.01 KB</div>
+          <p><strong>Header snapshot:</strong> <code>python-3.11</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='setup.py root   from setuptools import setup || setup()'>
+          <summary><a class='pathlink' href='../setup.py' target='_blank'>setup.py</a></summary>
+          <div class='meta'>Lines: 2 | Size: 0.04 KB</div>
+          <p><strong>Imports (sample):</strong> <code>from setuptools import setup</code></p>
+          <p><strong>Header snapshot:</strong> <code>from setuptools import setup || setup()</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='src\__init__.py root   # this file makes the src directory a python package'>
+          <summary><a class='pathlink' href='../src/__init__.py' target='_blank'>src\__init__.py</a></summary>
+          <div class='meta'>Lines: 1 | Size: 0.05 KB</div>
+          <p><strong>Header snapshot:</strong> <code># This file makes the src directory a Python package</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='streamlit_app.py root   from app import main || if __name__ == &quot;__main__&quot;: ||     main()'>
+          <summary><a class='pathlink' href='../streamlit_app.py' target='_blank'>streamlit_app.py</a></summary>
+          <div class='meta'>Lines: 3 | Size: 0.06 KB</div>
+          <p><strong>Imports (sample):</strong> <code>from app import main</code></p>
+          <p><strong>Header snapshot:</strong> <code>from app import main || if __name__ == &quot;__main__&quot;: ||     main()</code></p>
+        </details>
+        <details class='file doc-item' data-category='Root' data-search='uv.lock root   version = 1 || revision = 2 || requires-python = &quot;&gt;=3.11&quot;'>
+          <summary><a class='pathlink' href='../uv.lock' target='_blank'>uv.lock</a></summary>
+          <div class='meta'>Lines: 1260 | Size: 261.46 KB</div>
+          <p><strong>Header snapshot:</strong> <code>version = 1 || revision = 2 || requires-python = &quot;&gt;=3.11&quot;</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Scripts' id='cat_Scripts'>
+        <h2>Scripts</h2>
+        <details class='file doc-item' data-category='Scripts' data-search='scripts\setup.sh scripts   #!/bin/bash || # run once to set up all poseidon dependencies and model downloads || pip install -r requirements.txt'>
+          <summary><a class='pathlink' href='../scripts/setup.sh' target='_blank'>scripts\setup.sh</a></summary>
+          <div class='meta'>Lines: 5 | Size: 0.2 KB</div>
+          <p><strong>Header snapshot:</strong> <code>#!/bin/bash || # Run once to set up all POSEIDON dependencies and model downloads || pip install -r requirements.txt</code></p>
+        </details>
+        <details class='file doc-item' data-category='Scripts' data-search='scripts\train_models.py scripts  train_anomaly_detector, train_intent_ner &quot;&quot;&quot; || one-time model training script. || run once after collecting argo data: python scripts/train_models.py'>
+          <summary><a class='pathlink' href='../scripts/train_models.py' target='_blank'>scripts\train_models.py</a></summary>
+          <div class='meta'>Lines: 84 | Size: 3.26 KB</div>
+          <p><strong>Functions:</strong> <code>train_anomaly_detector, train_intent_ner</code></p>
+          <p><strong>Imports (sample):</strong> <code>import logging || import random || from src.core.paths import (</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || One-time model training script. || Run ONCE after collecting ARGO data: python scripts/train_models.py</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Skills' id='cat_Skills'>
+        <h2>Skills</h2>
+        <details class='file doc-item' data-category='Skills' data-search='src\skills\data_visualization\skill.md skills   --- || name: data-visualization || description: produce ocean-data visual outputs and reporting directives. use when users request plots, trends, maps, or export-ready charts from retrieved and analyzed datasets.'>
+          <summary><a class='pathlink' href='../src/skills/data_visualization/SKILL.md' target='_blank'>src\skills\data_visualization\SKILL.md</a></summary>
+          <div class='meta'>Lines: 11 | Size: 0.58 KB</div>
+          <p><strong>Header snapshot:</strong> <code>--- || name: data-visualization || description: Produce ocean-data visual outputs and reporting directives. Use when users request plots, trends, maps, or export-ready charts from retrieved and analyzed datasets.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Skills' data-search='src\skills\oceanographic_analysis\skill.md skills   --- || name: oceanographic-analysis || description: analyze oceanographic query outputs with domain checks and trend logic. use when requests require interpretation of temperature, salinity, depth, anomalies, or basin-aware insights.'>
+          <summary><a class='pathlink' href='../src/skills/oceanographic_analysis/SKILL.md' target='_blank'>src\skills\oceanographic_analysis\SKILL.md</a></summary>
+          <div class='meta'>Lines: 10 | Size: 0.62 KB</div>
+          <p><strong>Header snapshot:</strong> <code>--- || name: oceanographic-analysis || description: Analyze oceanographic query outputs with domain checks and trend logic. Use when requests require interpretation of temperature, salinity, depth, anomalies, or basin-aware insights.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Skills' data-search='src\skills\sql_generation\skill.md skills   --- || name: sql-generation || description: generate safe parameterized sql plans for oceanographic retrieval tasks. use when natural language requests must be translated into query filters, joins, and time/depth constraints.'>
+          <summary><a class='pathlink' href='../src/skills/sql_generation/SKILL.md' target='_blank'>src\skills\sql_generation\SKILL.md</a></summary>
+          <div class='meta'>Lines: 10 | Size: 0.56 KB</div>
+          <p><strong>Header snapshot:</strong> <code>--- || name: sql-generation || description: Generate safe parameterized SQL plans for oceanographic retrieval tasks. Use when natural language requests must be translated into query filters, joins, and time/depth constraints.</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='State Models' id='cat_State_Models'>
+        <h2>State Models</h2>
+        <details class='file doc-item' data-category='State Models' data-search='src\state\__init__.py state models   # this file makes the state directory a python package || from src.state.models import agentrole, agentstate, floatchatstate, message, scientificintent || from src.state.schemas import ('>
+          <summary><a class='pathlink' href='../src/state/__init__.py' target='_blank'>src\state\__init__.py</a></summary>
+          <div class='meta'>Lines: 27 | Size: 0.6 KB</div>
+          <p><strong>Imports (sample):</strong> <code>from src.state.models import AgentRole, AgentState, FloatChatState, Message, ScientificIntent || from src.state.schemas import (</code></p>
+          <p><strong>Header snapshot:</strong> <code># This file makes the state directory a Python package || from src.state.models import AgentRole, AgentState, FloatChatState, Message, ScientificIntent || from src.state.schemas import (</code></p>
+        </details>
+        <details class='file doc-item' data-category='State Models' data-search='src\state\models.py state models scientificintent, floatchatstate, agentrole, message, agentstate  &quot;&quot;&quot; || state models for the argo float chat system. || these models define the data structures used throughout the workflow.'>
+          <summary><a class='pathlink' href='../src/state/models.py' target='_blank'>src\state\models.py</a></summary>
+          <div class='meta'>Lines: 138 | Size: 5.68 KB</div>
+          <p><strong>Classes:</strong> <code>ScientificIntent, FloatChatState, AgentRole, Message, AgentState</code></p>
+          <p><strong>Imports (sample):</strong> <code>from pydantic import BaseModel, field_validator, Field, ConfigDict || from typing import Optional, Tuple, Dict, Any, List, Union || from datetime import datetime || from enum import Enum</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || State models for the Argo Float Chat system. || These models define the data structures used throughout the workflow.</code></p>
+        </details>
+        <details class='file doc-item' data-category='State Models' data-search='src\state\schemas.py state models agenttask, agentresult, qualityreport, executionplan, orchestratorrequest, orchestratorresponse, eventtype, streamevent  from __future__ import annotations || from datetime import datetime, timezone || from enum import enum'>
+          <summary><a class='pathlink' href='../src/state/schemas.py' target='_blank'>src\state\schemas.py</a></summary>
+          <div class='meta'>Lines: 61 | Size: 2.26 KB</div>
+          <p><strong>Classes:</strong> <code>AgentTask, AgentResult, QualityReport, ExecutionPlan, OrchestratorRequest, OrchestratorResponse, EventType, StreamEvent</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from datetime import datetime, timezone || from enum import Enum || from typing import Any, Dict, List, Literal, Optional || from uuid import uuid4 || from pydantic import BaseModel, Field</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from datetime import datetime, timezone || from enum import Enum</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Supervisor' id='cat_Supervisor'>
+        <h2>Supervisor</h2>
+        <details class='file doc-item' data-category='Supervisor' data-search='src\supervisor\__init__.py supervisor   # poseidon supervisor agent - intelligent intermediary between user and orchestrator'>
+          <summary><a class='pathlink' href='../src/supervisor/__init__.py' target='_blank'>src\supervisor\__init__.py</a></summary>
+          <div class='meta'>Lines: 1 | Size: 0.08 KB</div>
+          <p><strong>Header snapshot:</strong> <code># POSEIDON Supervisor Agent - Intelligent intermediary between user and orchestrator</code></p>
+        </details>
+        <details class='file doc-item' data-category='Supervisor' data-search='src\supervisor\agent.py supervisor supervisoragent  &quot;&quot;&quot; || supervisor agent &#226;€” the central intelligence layer for poseidon. || routes user queries through clarification &#226;†’ map confirmation &#226;†’ approval &#226;†’ execution.'>
+          <summary><a class='pathlink' href='../src/supervisor/agent.py' target='_blank'>src\supervisor\agent.py</a></summary>
+          <div class='meta'>Lines: 474 | Size: 22.31 KB</div>
+          <p><strong>Classes:</strong> <code>SupervisorAgent</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import json || import logging || import os || from typing import Any, Dict, List, Optional || from dotenv import load_dotenv</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Supervisor Agent &#226;€” the central intelligence layer for POSEIDON. || Routes user queries through clarification &#226;†’ map confirmation &#226;†’ approval &#226;†’ execution.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Supervisor' data-search='src\supervisor\clarification.py supervisor clarificationengine  &quot;&quot;&quot; || clarification engine for the supervisor agent. || generates structured clarification questions based on missing/ambiguous parameters.'>
+          <summary><a class='pathlink' href='../src/supervisor/clarification.py' target='_blank'>src\supervisor\clarification.py</a></summary>
+          <div class='meta'>Lines: 202 | Size: 7.19 KB</div>
+          <p><strong>Classes:</strong> <code>ClarificationEngine</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import logging || from typing import Any, Dict, List, Optional || from src.supervisor.state import ClarificationQuestion</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Clarification Engine for the Supervisor Agent. || Generates structured clarification questions based on missing/ambiguous parameters.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Supervisor' data-search='src\supervisor\map_interface.py supervisor mapinterface  &quot;&quot;&quot; || map interface for the supervisor agent. || generates folium maps for geographic confirmation in streamlit.'>
+          <summary><a class='pathlink' href='../src/supervisor/map_interface.py' target='_blank'>src\supervisor\map_interface.py</a></summary>
+          <div class='meta'>Lines: 117 | Size: 3.9 KB</div>
+          <p><strong>Classes:</strong> <code>MapInterface</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import logging || import sqlite3 || from typing import Any, Dict, Optional || from src.core.paths import ARGO_DB_PATH</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Map interface for the Supervisor Agent. || Generates Folium maps for geographic confirmation in Streamlit.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Supervisor' data-search='src\supervisor\planner.py supervisor workflowplanner  &quot;&quot;&quot; || workflow planner for the supervisor agent. || produces approval-ready execution plans with estimated time, cost, and steps.'>
+          <summary><a class='pathlink' href='../src/supervisor/planner.py' target='_blank'>src\supervisor\planner.py</a></summary>
+          <div class='meta'>Lines: 99 | Size: 3.96 KB</div>
+          <p><strong>Classes:</strong> <code>WorkflowPlanner</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import logging || from typing import Any, Dict, Optional || from src.supervisor.map_interface import MapInterface || from src.supervisor.state import WorkflowPlan</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Workflow Planner for the Supervisor Agent. || Produces approval-ready execution plans with estimated time, cost, and steps.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Supervisor' data-search='src\supervisor\state.py supervisor supervisorphase, clarificationquestion, workflowplan, supervisorresponse, supervisorconversationstate  &quot;&quot;&quot; || supervisor conversation state model. || tracks multi-turn interactions between user and supervisor agent.'>
+          <summary><a class='pathlink' href='../src/supervisor/state.py' target='_blank'>src\supervisor\state.py</a></summary>
+          <div class='meta'>Lines: 118 | Size: 5.27 KB</div>
+          <p><strong>Classes:</strong> <code>SupervisorPhase, ClarificationQuestion, WorkflowPlan, SupervisorResponse, SupervisorConversationState</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from enum import Enum || from typing import Any, Dict, List, Optional || from uuid import uuid4 || from pydantic import BaseModel, Field</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Supervisor conversation state model. || Tracks multi-turn interactions between user and Supervisor Agent.</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Tests' id='cat_Tests'>
+        <h2>Tests</h2>
+        <details class='file doc-item' data-category='Tests' data-search='tests\integration\test_orchestrator_smoke.py tests  test_orchestrator_smoke from src.orchestrator.main import poseidonorchestrator || from src.state.schemas import agentresult, agenttask, orchestratorrequest || def test_orchestrator_smoke(monkeypatch):'>
+          <summary><a class='pathlink' href='../tests/integration/test_orchestrator_smoke.py' target='_blank'>tests\integration\test_orchestrator_smoke.py</a></summary>
+          <div class='meta'>Lines: 68 | Size: 2.25 KB</div>
+          <p><strong>Functions:</strong> <code>test_orchestrator_smoke</code></p>
+          <p><strong>Imports (sample):</strong> <code>from src.orchestrator.main import PoseidonOrchestrator || from src.state.schemas import AgentResult, AgentTask, OrchestratorRequest</code></p>
+          <p><strong>Header snapshot:</strong> <code>from src.orchestrator.main import PoseidonOrchestrator || from src.state.schemas import AgentResult, AgentTask, OrchestratorRequest || def test_orchestrator_smoke(monkeypatch):</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tests' data-search='tests\test_geosolver.py tests testcentroidaccuracy, testfuzzymatching, testcityresolution, testpointclassification, testedgecases, testbackwardcompat, testregionlisting classifier &quot;&quot;&quot; || tests for the marine polygon classifier (geosolver.py). || verifies that the self-contained marine polygon classifier correctly'>
+          <summary><a class='pathlink' href='../tests/test_geosolver.py' target='_blank'>tests\test_geosolver.py</a></summary>
+          <div class='meta'>Lines: 157 | Size: 7.38 KB</div>
+          <p><strong>Classes:</strong> <code>TestCentroidAccuracy, TestFuzzyMatching, TestCityResolution, TestPointClassification, TestEdgeCases, TestBackwardCompat, TestRegionListing</code></p>
+          <p><strong>Functions:</strong> <code>classifier</code></p>
+          <p><strong>Imports (sample):</strong> <code>import pytest</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Tests for the Marine Polygon Classifier (geosolver.py). || Verifies that the self-contained marine polygon classifier correctly</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tests' data-search='tests\test_processor.py tests   '>
+          <summary><a class='pathlink' href='../tests/test_processor.py' target='_blank'>tests\test_processor.py</a></summary>
+          <div class='meta'>Lines: 0 | Size: 0 KB</div>
+          <p>Binary/notebook/config file with no parsed symbols.</p>
+        </details>
+        <details class='file doc-item' data-category='Tests' data-search='tests\test_tools.py tests   '>
+          <summary><a class='pathlink' href='../tests/test_tools.py' target='_blank'>tests\test_tools.py</a></summary>
+          <div class='meta'>Lines: 0 | Size: 0 KB</div>
+          <p>Binary/notebook/config file with no parsed symbols.</p>
+        </details>
+        <details class='file doc-item' data-category='Tests' data-search='tests\unit\test_registry.py tests inputmodel, outputmodel _double, test_registry_register_and_invoke, test_registry_validation_failure import pytest || from pydantic import basemodel || from src.tools.registry import toolregistry'>
+          <summary><a class='pathlink' href='../tests/unit/test_registry.py' target='_blank'>tests\unit\test_registry.py</a></summary>
+          <div class='meta'>Lines: 19 | Size: 0.75 KB</div>
+          <p><strong>Classes:</strong> <code>InputModel, OutputModel</code></p>
+          <p><strong>Functions:</strong> <code>_double, test_registry_register_and_invoke, test_registry_validation_failure</code></p>
+          <p><strong>Imports (sample):</strong> <code>import pytest || from pydantic import BaseModel || from src.tools.registry import ToolRegistry</code></p>
+          <p><strong>Header snapshot:</strong> <code>import pytest || from pydantic import BaseModel || from src.tools.registry import ToolRegistry</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tests' data-search='tests\unit\test_router.py tests  test_router_defaults_to_openai from src.orchestrator.router import policyrouter || def test_router_defaults_to_openai(): ||     router = policyrouter()'>
+          <summary><a class='pathlink' href='../tests/unit/test_router.py' target='_blank'>tests\unit\test_router.py</a></summary>
+          <div class='meta'>Lines: 7 | Size: 0.31 KB</div>
+          <p><strong>Functions:</strong> <code>test_router_defaults_to_openai</code></p>
+          <p><strong>Imports (sample):</strong> <code>from src.orchestrator.router import PolicyRouter</code></p>
+          <p><strong>Header snapshot:</strong> <code>from src.orchestrator.router import PolicyRouter || def test_router_defaults_to_openai(): ||     router = PolicyRouter()</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tests' data-search='tests\unit\test_validation_agent.py tests  test_validation_agent_passes_plausible_data, test_validation_agent_flags_invalid_depth_and_no_data, test_validation_agent_flags_time_window_inconsistency, test_validation_agent_flags_high_outlier_rate from src.agents.validation.agent import validationagent || from src.state.schemas import agenttask || def test_validation_agent_passes_plausible_data():'>
+          <summary><a class='pathlink' href='../tests/unit/test_validation_agent.py' target='_blank'>tests\unit\test_validation_agent.py</a></summary>
+          <div class='meta'>Lines: 85 | Size: 3.29 KB</div>
+          <p><strong>Functions:</strong> <code>test_validation_agent_passes_plausible_data, test_validation_agent_flags_invalid_depth_and_no_data, test_validation_agent_flags_time_window_inconsistency, test_validation_agent_flags_high_outlier_rate</code></p>
+          <p><strong>Imports (sample):</strong> <code>from src.agents.validation.agent import ValidationAgent || from src.state.schemas import AgentTask</code></p>
+          <p><strong>Header snapshot:</strong> <code>from src.agents.validation.agent import ValidationAgent || from src.state.schemas import AgentTask || def test_validation_agent_passes_plausible_data():</code></p>
+        </details>
+      </div>
+      <div class='cat doc-item' data-category='Tooling' id='cat_Tooling'>
+        <h2>Tooling</h2>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\__init__.py tooling   &quot;&quot;&quot; || tools package for the poseidon project. || this package contains various utility tools including geospatial operations,'>
+          <summary><a class='pathlink' href='../src/tools/__init__.py' target='_blank'>src\tools\__init__.py</a></summary>
+          <div class='meta'>Lines: 8 | Size: 0.38 KB</div>
+          <p><strong>Imports (sample):</strong> <code>from .geosolver import GeoSolver, MarinePolygonClassifier, resolve_location_fast</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Tools package for the POSEIDON project. || This package contains various utility tools including geospatial operations,</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\fetch.py tooling  get_default_time_range, fetch_argo_data, _fetch_with_params, print_test_results &quot;&quot;&quot; || argo data fetcher || fetches oceanographic data from argo floats using direct erddap csv api.'>
+          <summary><a class='pathlink' href='../src/tools/fetch.py' target='_blank'>src\tools\fetch.py</a></summary>
+          <div class='meta'>Lines: 271 | Size: 10.2 KB</div>
+          <p><strong>Functions:</strong> <code>get_default_time_range, fetch_argo_data, _fetch_with_params, print_test_results</code></p>
+          <p><strong>Imports (sample):</strong> <code>import datetime || import os || from typing import Optional || import pandas as pd || import requests || from dotenv import load_dotenv</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Argo Data Fetcher || Fetches oceanographic data from Argo floats using direct ERDDAP CSV API.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\fetcher.py tooling  get_default_time_range, fetch_argo_data, _fetch_with_params &quot;&quot;&quot; || argo data fetcher || fetches oceanographic data from argo floats using direct erddap csv api.'>
+          <summary><a class='pathlink' href='../src/tools/fetcher.py' target='_blank'>src\tools\fetcher.py</a></summary>
+          <div class='meta'>Lines: 256 | Size: 10.89 KB</div>
+          <p><strong>Functions:</strong> <code>get_default_time_range, fetch_argo_data, _fetch_with_params</code></p>
+          <p><strong>Imports (sample):</strong> <code>import datetime || from typing import Optional || import pandas as pd || import requests || from dotenv import load_dotenv || from langsmith import traceable</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Argo Data Fetcher || Fetches oceanographic data from Argo floats using direct ERDDAP CSV API.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\geosolver.py tooling marinepolygonclassifier, geosolver _build_polygons, resolve_location_fast &quot;&quot;&quot; || geosolver - marine polygon classifier for geo resolution || self-contained geographic resolver for oceanographic locations.'>
+          <summary><a class='pathlink' href='../src/tools/geosolver.py' target='_blank'>src\tools\geosolver.py</a></summary>
+          <div class='meta'>Lines: 414 | Size: 16.78 KB</div>
+          <p><strong>Classes:</strong> <code>MarinePolygonClassifier, GeoSolver</code></p>
+          <p><strong>Functions:</strong> <code>_build_polygons, resolve_location_fast</code></p>
+          <p><strong>Imports (sample):</strong> <code>import logging || from typing import Dict, List, Optional, Tuple || from functools import lru_cache || from shapely.geometry import Point, Polygon || from thefuzz import fuzz</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || GeoSolver - Marine Polygon Classifier for Geo Resolution || Self-contained geographic resolver for oceanographic locations.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\intent_extractor.py tooling  parse_relative_time, extract_intent_with_llm, fallback_intent_extraction import os || import json || import datetime'>
+          <summary><a class='pathlink' href='../src/tools/intent_extractor.py' target='_blank'>src\tools\intent_extractor.py</a></summary>
+          <div class='meta'>Lines: 300 | Size: 12.19 KB</div>
+          <p><strong>Functions:</strong> <code>parse_relative_time, extract_intent_with_llm, fallback_intent_extraction</code></p>
+          <p><strong>Imports (sample):</strong> <code>import os || import json || import datetime || import re || import calendar || from dotenv import load_dotenv</code></p>
+          <p><strong>Header snapshot:</strong> <code>import os || import json || import datetime</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\intent_extractor_model.py tooling  extract_intent_fast, _spacy_extract &quot;&quot;&quot; || fast local intent extraction using spacy ner. || replaces gpt-4o-mini call for basic entity parsing.'>
+          <summary><a class='pathlink' href='../src/tools/intent_extractor_model.py' target='_blank'>src\tools\intent_extractor_model.py</a></summary>
+          <div class='meta'>Lines: 66 | Size: 2.41 KB</div>
+          <p><strong>Functions:</strong> <code>extract_intent_fast, _spacy_extract</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import re || import logging || from typing import Optional || from src.core.paths import INTENT_NER_MODEL_PATH || from src.state.models import ScientificIntent</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Fast local intent extraction using spaCy NER. || Replaces GPT-4o-mini call for basic entity parsing.</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\ocean_profile_tool.py tooling  pressure_to_depth, quality_control, bin_vertical_profile, smooth_profile, compute_physics, compute_depth_context, detect_thermocline, classify_layers, extract_insights, analyze_single_profile, analyze_ocean_profile, ocean_profile_analysis_tool, main &quot;&quot;&quot; || adaptive ocean profile analysis tool || ------------------------------------'>
+          <summary><a class='pathlink' href='../src/tools/OCEAN_profile_tool.py' target='_blank'>src\tools\OCEAN_profile_tool.py</a></summary>
+          <div class='meta'>Lines: 464 | Size: 16.64 KB</div>
+          <p><strong>Functions:</strong> <code>pressure_to_depth, quality_control, bin_vertical_profile, smooth_profile, compute_physics, compute_depth_context, detect_thermocline, classify_layers, extract_insights, analyze_single_profile, analyze_ocean_profile, ocean_profile_analysis_tool, main</code></p>
+          <p><strong>Imports (sample):</strong> <code>from typing import Dict, Optional, Tuple, Union, List, Any || import os || import sys || import pandas as pd || import numpy as np || from scipy.signal import savgol_filter</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Adaptive Ocean Profile Analysis Tool || ------------------------------------</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\processor.py tooling argodataprocessor process_data import os || import pandas as pd || import sqlite3'>
+          <summary><a class='pathlink' href='../src/tools/processor.py' target='_blank'>src\tools\processor.py</a></summary>
+          <div class='meta'>Lines: 421 | Size: 18.94 KB</div>
+          <p><strong>Classes:</strong> <code>ArgoDataProcessor</code></p>
+          <p><strong>Functions:</strong> <code>process_data</code></p>
+          <p><strong>Imports (sample):</strong> <code>import os || import pandas as pd || import sqlite3 || import logging || from typing import Dict, Any, Optional, List, Tuple || from pathlib import Path</code></p>
+          <p><strong>Header snapshot:</strong> <code>import os || import pandas as pd || import sqlite3</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\registry.py tooling registeredtool, toolregistry  from __future__ import annotations || from dataclasses import dataclass || from typing import any, callable, dict, optional, type'>
+          <summary><a class='pathlink' href='../src/tools/registry.py' target='_blank'>src\tools\registry.py</a></summary>
+          <div class='meta'>Lines: 45 | Size: 1.84 KB</div>
+          <p><strong>Classes:</strong> <code>RegisteredTool, ToolRegistry</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || from dataclasses import dataclass || from typing import Any, Callable, Dict, Optional, Type || from pydantic import BaseModel, ValidationError</code></p>
+          <p><strong>Header snapshot:</strong> <code>from __future__ import annotations || from dataclasses import dataclass || from typing import Any, Callable, Dict, Optional, Type</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\visualizer.py tooling csvvisualizer main import os || import pandas as pd || import matplotlib.pyplot as plt'>
+          <summary><a class='pathlink' href='../src/tools/visualizer.py' target='_blank'>src\tools\visualizer.py</a></summary>
+          <div class='meta'>Lines: 180 | Size: 6.47 KB</div>
+          <p><strong>Classes:</strong> <code>CSVVisualizer</code></p>
+          <p><strong>Functions:</strong> <code>main</code></p>
+          <p><strong>Imports (sample):</strong> <code>import os || import pandas as pd || import matplotlib.pyplot as plt || import seaborn as sns || from pathlib import Path || from typing import List, Optional</code></p>
+          <p><strong>Header snapshot:</strong> <code>import os || import pandas as pd || import matplotlib.pyplot as plt</code></p>
+        </details>
+        <details class='file doc-item' data-category='Tooling' data-search='src\tools\water_mass_classifier.py tooling  _load_anomaly_model, classify_water_mass_rule_based, classify_water_masses, get_dominant_water_mass, detect_anomalies &quot;&quot;&quot; || water mass classifier using scikit-learn isolationforest + rule-based t-s classification. || train once with: python scripts/train_models.py'>
+          <summary><a class='pathlink' href='../src/tools/water_mass_classifier.py' target='_blank'>src\tools\water_mass_classifier.py</a></summary>
+          <div class='meta'>Lines: 121 | Size: 5.23 KB</div>
+          <p><strong>Functions:</strong> <code>_load_anomaly_model, classify_water_mass_rule_based, classify_water_masses, get_dominant_water_mass, detect_anomalies</code></p>
+          <p><strong>Imports (sample):</strong> <code>from __future__ import annotations || import logging || from typing import List, Dict, Any, Optional || from src.core.paths import ANOMALY_MODEL_PATH</code></p>
+          <p><strong>Header snapshot:</strong> <code>&quot;&quot;&quot; || Water mass classifier using scikit-learn IsolationForest + rule-based T-S classification. || Train once with: python scripts/train_models.py</code></p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const search = document.getElementById("search");
+    const category = document.getElementById("category");
+    const items = Array.from(document.querySelectorAll("details.file"));
+    const cats = [...new Set(items.map(i => i.dataset.category))].sort();
+    for (const c of cats) {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      category.appendChild(opt);
+    }
+    function applyFilter() {
+      const q = search.value.trim().toLowerCase();
+      const c = category.value;
+      for (const el of items) {
+        const okQ = !q || (el.dataset.search || "").includes(q);
+        const okC = !c || el.dataset.category === c;
+        el.style.display = (okQ && okC) ? "block" : "none";
+      }
+      for (const block of document.querySelectorAll(".cat")) {
+        const visible = Array.from(block.querySelectorAll("details.file")).some(d => d.style.display !== "none");
+        block.style.display = visible ? "block" : "none";
+      }
+    }
+    search.addEventListener("input", applyFilter);
+    category.addEventListener("change", applyFilter);
+  </script>
+</body>
+</html>

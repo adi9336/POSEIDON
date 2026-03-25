@@ -10,6 +10,7 @@ load_dotenv()
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage
+from langsmith import traceable
 
 from src.state.models import ScientificIntent
 
@@ -111,6 +112,7 @@ def parse_relative_time(time_str: str) -> tuple:
 # ---------------------------------------------------------
 # 3. Intent Extraction Function
 # ---------------------------------------------------------
+@traceable(name="extract_intent_with_llm", run_type="llm")
 def extract_intent_with_llm(query: str) -> ScientificIntent:
     """
     Extract scientific intent directly into ScientificIntent schema.
@@ -225,6 +227,7 @@ Response (assuming today is 2024-12-19):
 # ---------------------------------------------------------
 # 4. Fallback Extraction (no LLM)
 # ---------------------------------------------------------
+@traceable(name="fallback_intent_extraction")
 def fallback_intent_extraction(query: str) -> ScientificIntent:
     """Simple keyword-based extraction when LLM is unavailable"""
     q = query.lower()

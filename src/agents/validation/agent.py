@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 from statistics import median
 from typing import Any, Dict, List
 
+from langsmith import traceable
+
 from src.agents.base_agent import BaseAgent
 from src.state.schemas import AgentResult, AgentTask, QualityReport
 
@@ -13,6 +15,7 @@ class ValidationAgent(BaseAgent):
     OUTLIER_RATE_THRESHOLD = 0.10
     TIME_WINDOW_DRIFT_THRESHOLD = 0.05
 
+    @traceable(name="validation_plan")
     def plan(self, context: Dict[str, Any]) -> List[AgentTask]:
         return [
             AgentTask(
@@ -26,6 +29,7 @@ class ValidationAgent(BaseAgent):
             )
         ]
 
+    @traceable(name="validation_execute")
     def execute(self, task: AgentTask, context: Dict[str, Any]) -> AgentResult:
         intent = task.payload.get("intent", {}) or {}
         analysis = task.payload.get("analysis", {}) or {}
@@ -140,6 +144,7 @@ class ValidationAgent(BaseAgent):
             },
         )
 
+    @traceable(name="validation_validate")
     def validate(
         self, result: AgentResult, context: Dict[str, Any]
     ) -> QualityReport | None:

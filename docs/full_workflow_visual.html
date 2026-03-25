@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POSEIDON Full Workflow Visual</title>
+  <style>
+    :root {
+      --bg1: #edf6ff;
+      --bg2: #f8fbff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #d9e7f7;
+      --card: #ffffff;
+      --u: #2563eb;
+      --s: #0f766e;
+      --o: #7c3aed;
+      --a: #9333ea;
+      --t: #0369a1;
+      --m: #be185d;
+      --c: #b45309;
+      --k: #334155;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      scroll-behavior: smooth;
+    }
+    .wrap {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    h1, h2, h3 {
+      margin: 6px 0;
+    }
+    p, li {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    code {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 12px;
+    }
+    .chip {
+      display: inline-block;
+      margin: 6px 8px 0 0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      background: #f8fbff;
+    }
+    .section {
+      margin-top: 14px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      scroll-margin-top: 80px;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      background: #fff;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .lane {
+      margin-top: 10px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fcfeff;
+    }
+    .lane h3 {
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--k);
+    }
+    .flow-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(160px, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+    .node {
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: #fff;
+      min-height: 96px;
+      position: relative;
+    }
+    .node::after {
+      content: "→";
+      position: absolute;
+      right: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .flow-row .node:last-child::after {
+      content: "";
+    }
+    .node h4 {
+      margin: 0 0 4px;
+      font-size: 13px;
+    }
+    .node p {
+      margin: 0;
+      font-size: 12px;
+    }
+    .u { border-left: 4px solid var(--u); }
+    .s { border-left: 4px solid var(--s); }
+    .o { border-left: 4px solid var(--o); }
+    .a { border-left: 4px solid var(--a); }
+    .t { border-left: 4px solid var(--t); }
+    .m { border-left: 4px solid var(--m); }
+    .c { border-left: 4px solid var(--c); }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+    }
+    .card h3 {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+    .mermaid-like {
+      margin-top: 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #f8fbff;
+      padding: 10px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      color: #1e293b;
+      white-space: pre-wrap;
+    }
+    .small {
+      font-size: 12px;
+    }
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(4px);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #f8fbff;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 500ms ease, transform 500ms ease;
+    }
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    a {
+      color: #0369a1;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    @media (max-width: 980px) {
+      .flow-row {
+        grid-template-columns: 1fr;
+      }
+      .node::after {
+        content: "↓";
+        right: 50%;
+        top: auto;
+        bottom: -12px;
+        transform: translateX(50%);
+      }
+      .flow-row .node:last-child::after {
+        content: "";
+      }
+    }
+    @media print {
+      body {
+        background: #fff;
+      }
+      .toolbar {
+        display: none;
+      }
+      .hero, .section, .card, .lane {
+        box-shadow: none;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .section {
+        min-height: auto;
+      }
+      a {
+        color: #000;
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero" id="top">
+      <h1>POSEIDON Full Workflow (Mermaid-Style Visual)</h1>
+      <p>
+        End-to-end architecture and execution flow across Streamlit UI, Supervisor, Orchestrator, Agents, Tools, Memory, API, and Campaign automation.
+      </p>
+      <span class="chip">Primary runtime: Streamlit + Supervisor + Orchestrator</span>
+      <span class="chip">Secondary runtime: FastAPI</span>
+      <span class="chip">Optional runtime: Campaign Scheduler</span>
+      <span class="chip">Legacy compatibility path retained</span>
+
+      <div class="legend">
+        <span><i class="dot" style="background:var(--u)"></i>User/UI</span>
+        <span><i class="dot" style="background:var(--s)"></i>Supervisor</span>
+        <span><i class="dot" style="background:var(--o)"></i>Orchestrator</span>
+        <span><i class="dot" style="background:var(--a)"></i>Agents</span>
+        <span><i class="dot" style="background:var(--t)"></i>Tools/Data</span>
+        <span><i class="dot" style="background:var(--m)"></i>Memory</span>
+        <span><i class="dot" style="background:var(--c)"></i>Campaigns</span>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <a class="btn" href="#top">Top</a>
+      <a class="btn" href="#flow">Primary Flow</a>
+      <a class="btn" href="#agents">Agent Internals</a>
+      <a class="btn" href="#data">Data + Memory</a>
+      <a class="btn" href="#alts">Alternate Paths</a>
+      <a class="btn" href="#mermaid">Mermaid Text</a>
+      <button class="btn" onclick="window.print()">Print / Save PDF</button>
+    </div>
+
+    <div class="section reveal" id="flow">
+      <h2>1. Primary Streamlit Execution Flow</h2>
+      <div class="lane">
+        <h3>Runtime Chain</h3>
+        <div class="flow-row">
+          <div class="node u">
+            <h4>Streamlit Entry</h4>
+            <p><code>streamlit_app.py</code> -> <code>app.py</code> initializes runtime and UI state.</p>
+          </div>
+          <div class="node s">
+            <h4>Supervisor Gate</h4>
+            <p><code>src/supervisor/agent.py</code> decides: clarify, map confirm, approval, or execute.</p>
+          </div>
+          <div class="node o">
+            <h4>Orchestrator Graph</h4>
+            <p><code>src/orchestrator/main.py</code> builds and runs workflow graph with events.</p>
+          </div>
+          <div class="node a">
+            <h4>Agent Pipeline</h4>
+            <p>Understanding -> Retrieval -> Analysis -> Validation in <code>src/agents/</code>.</p>
+          </div>
+          <div class="node t">
+            <h4>Result + Visuals</h4>
+            <p>Diagnostics + Plotly/Folium rendering in <code>app.py</code>, plus final response.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section reveal" id="agents">
+      <h2>2. Agent Stage Internals</h2>
+      <div class="matrix">
+        <div class="card">
+          <h3>Query Understanding</h3>
+          <p>Parses natural-language request into structured scientific intent and requested variables.</p>
+          <p class="small"><code>src/agents/query_understanding/agent.py</code></p>
+        </div>
+        <div class="card">
+          <h3>Data Retrieval</h3>
+          <p>Resolves location/time/depth and fetches Argo data via ERDDAP into runtime data snapshots.</p>
+          <p class="small"><code>src/agents/data_retrieval/agent.py</code> + <code>src/tools/fetcher.py</code></p>
+        </div>
+        <div class="card">
+          <h3>Analysis</h3>
+          <p>Processes data through SQL/scientific logic and composes summary + variable insights.</p>
+          <p class="small"><code>src/agents/analysis/agent.py</code> + <code>src/tools/processor.py</code></p>
+        </div>
+        <div class="card">
+          <h3>Validation</h3>
+          <p>Applies scientific plausibility checks, outlier-rate checks, and confidence scoring.</p>
+          <p class="small"><code>src/agents/validation/agent.py</code></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section reveal" id="data">
+      <h2>3. Data + Memory Flow</h2>
+      <div class="flow-row">
+        <div class="node t">
+          <h4>Raw Data Ingest</h4>
+          <p>Fetched observations saved in <code>data/</code> and loaded into <code>data/argo_data.db</code>.</p>
+        </div>
+        <div class="node t">
+          <h4>Scientific Processing</h4>
+          <p>SQL-backed analysis and derived metrics from toolchain in <code>src/tools/</code>.</p>
+        </div>
+        <div class="node m">
+          <h4>Context Retrieval</h4>
+          <p><code>src/memory/context_builder.py</code> enriches orchestrator with historical context.</p>
+        </div>
+        <div class="node m">
+          <h4>Insight Write-back</h4>
+          <p><code>insight_store.py</code> stores structured records; semantic vectors are optional.</p>
+        </div>
+        <div class="node o">
+          <h4>Confidence-Aware Output</h4>
+          <p>Final response includes validation report, confidence, and execution metadata.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section reveal" id="alts">
+      <h2>4. Alternate Workflows</h2>
+      <div class="matrix">
+        <div class="card">
+          <h3>FastAPI Path</h3>
+          <p><code>src/api/server.py</code> serves <code>/v1/query</code> (orchestrator), websocket event stream, and compatibility <code>/query</code>.</p>
+        </div>
+        <div class="card">
+          <h3>Legacy Compatibility Path</h3>
+          <p>Legacy graph in <code>src/agent/</code> remains for fallback/compat mode and transition safety.</p>
+        </div>
+        <div class="card">
+          <h3>Campaign Automation Path</h3>
+          <p><code>src/campaigns/manager.py</code> schedules anomaly watch, weekly reports, and float watcher.</p>
+          <p class="small">Controlled by <code>POSEIDON_ENABLE_CAMPAIGNS</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section reveal" id="mermaid">
+      <h2>5. Mermaid-Like Source (Readable)</h2>
+      <div class="mermaid-like">flowchart LR
+  U[User on Streamlit UI] --> S[Supervisor Agent]
+  S -->|clarify/map/approve| U
+  S -->|ready_to_execute| O[Poseidon Orchestrator]
+  O --> Q[Query Understanding Agent]
+  Q --> R[Data Retrieval Agent]
+  R --> T[Tool: Fetcher + Geosolver]
+  T --> D[(data/argo_data.db)]
+  D --> A[Analysis Agent]
+  A --> P[Tool: Processor]
+  P --> V[Validation Agent]
+  V --> F[Final Response + Diagnostics + Charts]
+  O --> M[Memory Context + Insight Store]
+  C[Campaign Manager (optional)] --> O
+  API[FastAPI /v1/query] --> O
+  L[Legacy Agent Graph] --> O
+</div>
+      <p class="small">
+        This is intentionally provided in Mermaid-style text for clarity, while the rendered page uses richer custom styling.
+      </p>
+    </div>
+
+    <div class="section reveal">
+      <h2>6. Production Deployment View</h2>
+      <ul>
+        <li>Entrypoint for Streamlit Cloud: <code>streamlit_app.py</code></li>
+        <li>Runtime config: <code>.streamlit/config.toml</code>, <code>runtime.txt</code></li>
+        <li>Prod dependencies: <code>requirements.txt</code></li>
+        <li>Dev/testing extras: <code>requirements-dev.txt</code></li>
+        <li>Feature flags: <code>POSEIDON_ENABLE_CAMPAIGNS</code>, <code>POSEIDON_ENABLE_SEMANTIC_MEMORY</code></li>
+      </ul>
+      <p>
+        Companion docs:
+        <a href="full_clickable_documentation.html">full clickable documentation</a> |
+        <a href="full_project_description.md">full markdown analysis</a> |
+        <a href="project_workflow.html">previous workflow page</a>
+      </p>
+    </div>
+  </div>
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) e.target.classList.add("in");
+      }
+    }, { threshold: 0.16 });
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+  </script>
+</body>
+</html>
